@@ -1,0 +1,483 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  background: #ffffff;
+  color: #1f2937;
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+body {
+  background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 50%, #e5e7eb 100%);
+  position: relative;
+}
+
+/* Subtle background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Modern Terminal Styles */
+.terminal-window {
+  background: rgba(22, 27, 34, 0.95);
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.terminal-window::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+  opacity: 0.6;
+  border-radius: 11px 11px 0 0;
+}
+
+.terminal-window::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  width: 12px;
+  height: 12px;
+  background: #ef4444;
+  border-radius: 50%;
+  box-shadow: 20px 0 0 #f59e0b, 40px 0 0 #10b981;
+}
+
+/* Modern Button Styles */
+.btn-terminal {
+  background: rgba(22, 27, 34, 0.9);
+  border: 1px solid #30363d;
+  color: #3b82f6;
+  padding: 12px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.btn-terminal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-terminal:hover::before {
+  left: 100%;
+}
+
+.btn-terminal:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.btn-terminal:active {
+  transform: translateY(0);
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+/* Modern Selection */
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: #1f2937;
+}
+
+/* Typography */
+.font-terminal {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Grid Layouts */
+.grid-clean {
+  display: grid;
+  gap: 2rem;
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modern Cards */
+.card-professional {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.card-professional:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+  transform: translateY(-4px);
+}
+
+/* Form Styles */
+.form-input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #1f2937;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Section Spacing */
+.section-padding {
+  padding: 5rem 0;
+}
+
+/* Navigation */
+.nav-clean {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Status Indicators */
+.status-online {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.status-busy {
+  color: #f59e0b;
+  font-weight: 500;
+}
+
+.status-offline {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+  margin: 2rem 0;
+}
+
+/* Loading */
+.loading-professional {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 50%;
+  border-top-color: #3b82f6;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Terminal Cursor */
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: #3b82f6;
+  animation: blink 1s infinite;
+  margin-left: 2px;
+}
+
+/* Terminal Typing Effect */
+.terminal-typing {
+  overflow: hidden;
+  border-right: 2px solid #3b82f6;
+  white-space: nowrap;
+  animation: typewriter 3s steps(40) 1s forwards, cursor 1s infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .section-padding {
+    padding: 3rem 0;
+  }
+  
+  .card-professional {
+    padding: 1rem;
+  }
+  
+  .terminal-window {
+    border-radius: 8px;
+  }
+}
+
+/* Color Scheme - Improved Contrast */
+.text-primary {
+  color: #3b82f6;
+}
+
+.text-secondary {
+  color: #8b5cf6;
+}
+
+.text-accent {
+  color: #10b981;
+}
+
+.text-accent-blue {
+  color: #6366f1;
+}
+
+.text-muted {
+  color: #6b7280;
+}
+
+.text-dim {
+  color: #4b5563;
+}
+
+.bg-primary {
+  background: #3b82f6;
+}
+
+.bg-secondary {
+  background: #f3f4f6;
+}
+
+.bg-accent {
+  background: #10b981;
+}
+
+/* Terminal specific styles */
+.terminal-header {
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+  height: 32px;
+  border-radius: 11px 11px 0 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.terminal-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminal-dot.red { background: #ef4444; }
+.terminal-dot.yellow { background: #f59e0b; }
+.terminal-dot.green { background: #10b981; }
+
+.terminal-content {
+  padding: 1.5rem;
+}
+
+/* Command line styles */
+.command-line {
+  display: flex;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 0.5rem;
+}
+
+.command-prompt {
+  color: #3b82f6;
+  margin-right: 0.5rem;
+}
+
+.command-input {
+  color: #1f2937;
+  flex: 1;
+}
+
+.command-output {
+  color: #4b5563;
+  margin-left: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+}
+
+/* Glow effects */
+.glow-text {
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.glow-border {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Focus styles */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Improved text colors for better contrast */
+.text-text-primary {
+  color: #1f2937;
+}
+
+.text-text-secondary {
+  color: #4b5563;
+}
+
+.text-text-muted {
+  color: #6b7280;
+}
+
+/* Background colors for better contrast */
+.bg-terminal-bg {
+  background: #0d1117;
+}
+
+.bg-terminal-surface {
+  background: #1f2937;
+}
+
+.bg-terminal-border {
+  background: #374151;
+}
+
+.bg-light {
+  background: #f3f4f6;
+}
+
+.bg-dark {
+  background: #111827;
+}
+
+.bg-dark-gray {
+  background: #1f2937;
+}
+
+/* Success, warning, error colors */
+.text-success {
+  color: #10b981;
+}
+
+.text-warning {
+  color: #f59e0b;
+}
+
+.text-error {
+  color: #ef4444;
+}
+
+.text-info {
+  color: #3b82f6;
+}
+
+/* Custom shadow */
+.custom-shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}

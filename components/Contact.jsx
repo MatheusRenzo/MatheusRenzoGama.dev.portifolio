@@ -129,21 +129,6 @@ const Contact = () => {
                     </div>
                   </motion.div>
                   
-                  <motion.div
-                    whileHover={{ scale: 1.01, x: 4 }}
-                    className="flex flex-col sm:flex-row sm:items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-purple-600 transition-colors"
-                  >
-                    <FaPhone className="text-purple-600 mr-4 text-lg mb-2 sm:mb-0" />
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-800 text-sm font-medium mb-1">Telefone</p>
-                      <a 
-                        href="tel:+5511917243080" 
-                        className="text-gray-600 hover:text-purple-600 transition-colors font-medium text-sm"
-                      >
-                        (11) 91724-3080
-                      </a>
-                    </div>
-                  </motion.div>
                   
                   <motion.div
                     whileHover={{ scale: 1.01, x: 4 }}

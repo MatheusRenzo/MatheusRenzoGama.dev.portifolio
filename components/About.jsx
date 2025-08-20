@@ -16,20 +16,8 @@ const About = () => {
                   <span className="text-gray-800">Matheus Renzo Gama</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <span className="font-medium text-gray-700 w-24 flex-shrink-0">Idade:</span>
-                  <span className="text-gray-800">24 anos</span>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <span className="font-medium text-gray-700 w-24 flex-shrink-0">Localização:</span>
                   <span className="text-gray-800">São Paulo, SP, Brasil</span>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <span className="font-medium text-gray-700 w-24 flex-shrink-0">Telefone:</span>
-                  <span className="text-gray-800">(11) 91724-3080</span>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <span className="font-medium text-gray-700 w-24 flex-shrink-0">Email:</span>
-                  <span className="text-gray-800 break-all">matheus.gama.renzo@gmail.com</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <span className="font-medium text-gray-700 w-24 flex-shrink-0">tipo:</span>

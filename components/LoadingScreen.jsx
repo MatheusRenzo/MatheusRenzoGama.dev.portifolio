@@ -1,47 +1,57 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 const LoadingScreen = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [showCursor, setShowCursor] = useState(false);
+  const router = useRouter();
   
-  // Check if loading screen has been shown before
+  // Check if this is a page reload (not navigation)
   useEffect(() => {
-    const hasShownLoading = localStorage.getItem('portfolio-loading-shown');
-    if (hasShownLoading) {
-      // Skip loading screen if already shown
+    // Only show loading screen on actual page reload
+    const isReload = performance.navigation.type === 1 || 
+                    (typeof window !== 'undefined' && window.performance && window.performance.navigation && window.performance.navigation.type === 1);
+    
+    // Also check if it's the first visit (no sessionStorage)
+    const hasVisited = sessionStorage.getItem('portfolio-visited');
+    
+    if (!isReload && hasVisited) {
+      // Skip loading screen if it's navigation, not reload
       onComplete();
       return;
     }
     
-    // Mark as shown
-    localStorage.setItem('portfolio-loading-shown', 'true');
+    // Mark as visited for this session
+    sessionStorage.setItem('portfolio-visited', 'true');
   }, [onComplete]);
-  const [showCursor, setShowCursor] = useState(false);
 
+  // Faster boot sequence with reduced delays
   const bootSequence = [
-    { text: 'BIOS Version 2.1.0', delay: 130, type: 'info' },
+    { text: 'BIOS Version 2.1.0', delay: 250, type: 'info' },
     { text: 'Initializing system components...', delay: 180, type: 'loading' },
-    { text: 'Loading kernel modules...', delay: 130, type: 'loading' },
+    { text: 'Loading kernel modules...', delay: 250, type: 'loading' },
     { text: 'Mounting file systems...', delay: 130, type: 'loading' },
     { text: 'Starting network services...', delay: 250, type: 'loading' },
     { text: 'Loading development environment...', delay: 200, type: 'loading' },
     { text: 'Initializing portfolio system...', delay: 130, type: 'loading' },
-    { text: 'Loading project data...', delay: 160, type: 'loading' },
-    { text: 'Establishing secure connections...', delay: 130, type: 'loading' },
+    { text: 'Loading project data...', delay: 120, type: 'loading' },
+    { text: 'Establishing secure connections...', delay: 250, type: 'loading' },
     { text: 'System ready', delay: 60, type: 'success' },
-    { text: 'Welcome to Matheus Renzo Portfolio', delay: 200, type: 'welcome' }
+    { text: 'Welcome to Matheus Renzo Portfolio', delay: 290, type: 'welcome' }
   ];
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (currentStep < bootSequence.length - 1) {
         setCurrentStep(currentStep + 1);
-        setProgress(((currentStep + 1) / bootSequence.length) * 100);
+        setProgress(((currentStep + 2) / bootSequence.length) * 100);
       } else {
+        // Faster completion
         setTimeout(() => {
           onComplete();
-        }, 300);
+        }, 150);
       }
     }, bootSequence[currentStep].delay);
 
@@ -66,6 +76,11 @@ const LoadingScreen = ({ onComplete }) => {
     }
   };
 
+  // Skip button for impatient users
+  const handleSkip = () => {
+    onComplete();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 1 }}
@@ -75,7 +90,7 @@ const LoadingScreen = ({ onComplete }) => {
       <div className="w-full max-w-4xl mx-auto">
         {/* Terminal Window */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
           className="bg-gray-800 border border-gray-600 rounded-lg shadow-2xl overflow-hidden"
@@ -127,52 +142,46 @@ const LoadingScreen = ({ onComplete }) => {
                   className="bg-gradient-to-r from-green-400 to-blue-400 h-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.6 }}
                 />
               </div>
             </div>
 
-            {/* System Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 sm:mb-8">
-              <div className="bg-gray-700 rounded-lg p-3 sm:p-4 border border-gray-600">
-                <h3 className="text-green-400 font-mono text-xs sm:text-sm mb-2">SYSTEM INFO</h3>
-                <div className="space-y-1 text-xs text-gray-300">
-                  <div>OS: Portfolio OS v2.1.0</div>
-                  <div>Kernel: React 18.2.0</div>
-                  <div>Architecture: Backend Focus</div>
-                  <div>Memory: 8GB Available</div>
-                </div>
-              </div>
-              
-              <div className="bg-gray-700 rounded-lg p-3 sm:p-4 border border-gray-600">
-                <h3 className="text-blue-400 font-mono text-xs sm:text-sm mb-2">DEVELOPER PROFILE</h3>
-                <div className="space-y-1 text-xs text-gray-300">
-                  <div>Name: Matheus Renzo Gama</div>
-                  <div>Role: Backend Developer</div>
-                  <div>Specialty: Python & VTEX</div>
-                  <div>Status: Online & Available</div>
-                </div>
-              </div>
-            </div>
+
 
             {/* Final Status */}
             {currentStep === bootSequence.length - 1 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
                 className="text-center"
               >
                 <div className="text-green-400 font-mono text-base sm:text-lg mb-2">
                   ✓ System initialized successfully
                 </div>
-                <div className="text-gray-400 font-mono text-xs sm:text-sm">
+                <div className="text-gray-400 font-mono text-xs sm:text-sm mb-4">
                   Press any key to continue...
                 </div>
               </motion.div>
             )}
+
+            {/* Skip Button */}
+            <div className="text-center">
+              <button
+                onClick={handleSkip}
+                className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-gray-300 text-xs font-mono rounded transition-colors duration-200"
+              >
+                Skip Loading
+              </button>
+            </div>
           </div>
         </motion.div>
+      </div>
+
+      {/* Info about when it appears */}
+      <div className="fixed bottom-4 right-4 text-gray-500 text-xs">
+        Loading screen appears only on page reload
       </div>
     </motion.div>
   );

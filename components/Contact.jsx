@@ -53,7 +53,14 @@ const Contact = () => {
         from_email: formData.email,
         subject: formData.subject,
         message: formData.message,
-        to_name: 'Matheus Renzo'
+        timestamp: new Date().toLocaleString('pt-BR', {
+          timeZone: 'America/Sao_Paulo',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
       };
 
       // Send email using EmailJS

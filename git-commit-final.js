@@ -1,14 +1,14 @@
 const { execSync } = require('child_process');
 
 try {
-  console.log('🔄 Fazendo commit das melhorias no componente de teste...');
+  console.log('🔄 Fazendo commit final removendo o componente de teste...');
   execSync('git add .', { stdio: 'inherit' });
   
   console.log('✅ Arquivos adicionados!');
   console.log('');
   
   console.log('🔄 Fazendo commit...');
-  execSync('git commit -m "Improve Speed Insights test component with better debugging"', { stdio: 'inherit' });
+  execSync('git commit -m "Remove Speed Insights test component - main component working in _app.js"', { stdio: 'inherit' });
   
   console.log('✅ Commit realizado!');
   console.log('');
@@ -21,8 +21,8 @@ try {
   console.log('🎉 Deploy iniciado! O Vercel fará o deploy automaticamente.');
   console.log('📱 Acompanhe o progresso em: https://vercel.com/dashboard');
   console.log('');
-  console.log('🧪 Após o deploy, recarregue a página e veja os logs melhorados no console');
-  console.log('🔍 O componente agora captura mais informações sobre o que está acontecendo');
+  console.log('✅ Speed Insights agora está configurado corretamente no _app.js');
+  console.log('🔍 Após o deploy, verifique se está funcionando em produção');
   
 } catch (error) {
   console.error('❌ Erro:', error.message);

@@ -8,6 +8,7 @@ import Experience from '../components/Experience';
 import Skills from '../components/Skills';
 import Projects from '../components/Projects';
 import Contact from '../components/Contact';
+import SpeedInsightsTest from '../components/SpeedInsightsTest';
 
 import LoadingScreen from '../components/LoadingScreen';
 import Footer from '../components/Footer';
@@ -129,6 +130,7 @@ export default function Home() {
           {/* Main Content */}
           <main>
             <Hero onNavigate={handleSectionNavigate} />
+            <SpeedInsightsTest />
             <About />
             <Experience />
             <Skills />

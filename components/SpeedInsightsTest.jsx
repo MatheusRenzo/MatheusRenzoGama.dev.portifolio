@@ -3,13 +3,7 @@ import { Insights } from './Insights';
 
 export default function SpeedInsightsTest() {
   useEffect(() => {
-    console.log('🧪 SpeedInsightsTest: Componente montado');
-    
-    // Verificar se o componente SpeedInsights está sendo renderizado
-    setTimeout(() => {
-      const speedInsightsElements = document.querySelectorAll('[data-speed-insights]');
-      console.log('📊 Elementos SpeedInsights encontrados:', speedInsightsElements.length);
-    }, 1000);
+    // Componente montado - sem logs desnecessários
   }, []);
 
   return (

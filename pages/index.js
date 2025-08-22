@@ -130,6 +130,7 @@ export default function Home() {
           {/* Main Content */}
           <main>
             <Hero onNavigate={handleSectionNavigate} />
+            <SpeedInsightsTest />
             <About />
             <Experience />
             <Skills />

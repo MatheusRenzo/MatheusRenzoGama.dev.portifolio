@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { SpeedInsights } from '@vercel/speed-insights';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export default function SpeedInsightsTest() {
   useEffect(() => {
@@ -98,10 +98,7 @@ export default function SpeedInsightsTest() {
           Componente SpeedInsights renderizado abaixo:
         </p>
         <div data-speed-insights="test">
-          <SpeedInsights 
-            debug={true}
-            sampleRate={1.0}
-          />
+          <SpeedInsights />
         </div>
       </div>
       

@@ -1,12 +1,28 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 
 const LoadingScreen = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [showCursor, setShowCursor] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
+  
+  // Memoizar a sequência de boot para evitar recriações
+  const bootSequence = useMemo(() => [
+    { text: 'BIOS Version 2.1.0', delay: 80, type: 'info' },
+    { text: 'Initializing system components...', delay: 60, type: 'loading' },
+    { text: 'Loading kernel modules...', delay: 80, type: 'loading' },
+    { text: 'Mounting file systems...', delay: 50, type: 'loading' },
+    { text: 'Starting network services...', delay: 80, type: 'loading' },
+    { text: 'Loading development environment...', delay: 60, type: 'loading' },
+    { text: 'Initializing portfolio system...', delay: 50, type: 'loading' },
+    { text: 'Loading project data...', delay: 40, type: 'loading' },
+    { text: 'Establishing secure connections...', delay: 80, type: 'loading' },
+    { text: 'System ready', delay: 30, type: 'success' },
+    { text: 'Welcome to Matheus Renzo Portfolio', delay: 100, type: 'welcome' }
+  ], []);
   
   // Check if this is a page reload (not navigation)
   useEffect(() => {
@@ -25,48 +41,47 @@ const LoadingScreen = ({ onComplete }) => {
     
     // Mark as visited for this session
     sessionStorage.setItem('portfolio-visited', 'true');
+    
+    // Delay visibility to improve LCP
+    const visibilityTimer = setTimeout(() => setIsVisible(true), 50);
+    return () => clearTimeout(visibilityTimer);
   }, [onComplete]);
 
-  // Ultra-fast boot sequence - total time: ~2.3 seconds
-  const bootSequence = [
-    { text: 'BIOS Version 2.1.0', delay: 120, type: 'info' },
-    { text: 'Initializing system components...', delay: 100, type: 'loading' },
-    { text: 'Loading kernel modules...', delay: 120, type: 'loading' },
-    { text: 'Mounting file systems...', delay: 80, type: 'loading' },
-    { text: 'Starting network services...', delay: 120, type: 'loading' },
-    { text: 'Loading development environment...', delay: 100, type: 'loading' },
-    { text: 'Initializing portfolio system...', delay: 80, type: 'loading' },
-    { text: 'Loading project data...', delay: 70, type: 'loading' },
-    { text: 'Establishing secure connections...', delay: 120, type: 'loading' },
-    { text: 'System ready', delay: 40, type: 'success' },
-    { text: 'Welcome to Matheus Renzo Portfolio', delay: 150, type: 'welcome' }
-  ];
+  // Otimizar o progresso com useCallback
+  const updateProgress = useCallback((step) => {
+    setProgress(((step + 2) / bootSequence.length) * 100);
+  }, [bootSequence.length]);
 
+  // Ultra-fast boot sequence - total time: ~1.5 seconds (reduzido de 2.3s)
   useEffect(() => {
     const timer = setTimeout(() => {
       if (currentStep < bootSequence.length - 1) {
-        setCurrentStep(currentStep + 1);
-        setProgress(((currentStep + 2) / bootSequence.length) * 100);
+        const nextStep = currentStep + 1;
+        setCurrentStep(nextStep);
+        updateProgress(nextStep);
       } else {
         // Faster completion
         setTimeout(() => {
           onComplete();
-        }, 100);
+        }, 50);
       }
     }, bootSequence[currentStep].delay);
 
     return () => clearTimeout(timer);
-  }, [currentStep, bootSequence, onComplete]);
+  }, [currentStep, bootSequence, onComplete, updateProgress]);
 
-  useEffect(() => {
-    const cursorInterval = setInterval(() => {
-      setShowCursor(prev => !prev);
-    }, 500);
-
-    return () => clearInterval(cursorInterval);
+  // Otimizar o cursor com useCallback
+  const toggleCursor = useCallback(() => {
+    setShowCursor(prev => !prev);
   }, []);
 
-  const getStepColor = (type) => {
+  useEffect(() => {
+    const cursorInterval = setInterval(toggleCursor, 500);
+    return () => clearInterval(cursorInterval);
+  }, [toggleCursor]);
+
+  // Memoizar cores para evitar recálculos
+  const getStepColor = useCallback((type) => {
     switch (type) {
       case 'info': return 'text-blue-400';
       case 'loading': return 'text-green-400';
@@ -74,12 +89,17 @@ const LoadingScreen = ({ onComplete }) => {
       case 'welcome': return 'text-purple-400';
       default: return 'text-gray-300';
     }
-  };
+  }, []);
 
   // Skip button for impatient users
-  const handleSkip = () => {
+  const handleSkip = useCallback(() => {
     onComplete();
-  };
+  }, [onComplete]);
+
+  // Se não estiver visível, retornar null para melhorar LCP
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <motion.div
@@ -88,11 +108,11 @@ const LoadingScreen = ({ onComplete }) => {
       className="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4"
     >
       <div className="w-full max-w-4xl mx-auto">
-        {/* Terminal Window */}
+        {/* Terminal Window - Otimizado para LCP */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.1 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
           className="bg-gray-800 border border-gray-600 rounded-lg shadow-2xl overflow-hidden"
         >
           {/* Terminal Header */}
@@ -109,17 +129,17 @@ const LoadingScreen = ({ onComplete }) => {
 
           {/* Terminal Content */}
           <div className="p-4 sm:p-6">
-            {/* Boot Sequence */}
+            {/* Boot Sequence - Otimizado para renderização */}
             <div className="space-y-2 mb-6 sm:mb-8">
               {bootSequence.map((step, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -10 }}
                   animate={{ 
                     opacity: index <= currentStep ? 1 : 0.3,
-                    x: index <= currentStep ? 0 : -20
+                    x: index <= currentStep ? 0 : -10
                   }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
                   className={`font-mono text-xs sm:text-sm ${getStepColor(step.type)}`}
                 >
                   <span className="text-gray-500 mr-2">[{index + 1}]</span>
@@ -131,7 +151,7 @@ const LoadingScreen = ({ onComplete }) => {
               ))}
             </div>
 
-            {/* Progress Bar */}
+            {/* Progress Bar - Otimizado para LCP */}
             <div className="mb-6 sm:mb-8">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-400 font-mono text-xs sm:text-sm">System Boot Progress</span>
@@ -142,19 +162,17 @@ const LoadingScreen = ({ onComplete }) => {
                   className="bg-gradient-to-r from-green-400 to-blue-400 h-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.6 }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
                 />
               </div>
             </div>
 
-
-
-            {/* Final Status */}
+            {/* Final Status - Otimizado para renderização */}
             {currentStep === bootSequence.length - 1 && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
                 className="text-center"
               >
                 <div className="text-green-400 font-mono text-base sm:text-lg mb-2">

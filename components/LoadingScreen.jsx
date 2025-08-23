@@ -27,19 +27,19 @@ const LoadingScreen = ({ onComplete }) => {
     sessionStorage.setItem('portfolio-visited', 'true');
   }, [onComplete]);
 
-  // Faster boot sequence with reduced delays
+  // Ultra-fast boot sequence - total time: ~2.3 seconds
   const bootSequence = [
-    { text: 'BIOS Version 2.1.0', delay: 250, type: 'info' },
-    { text: 'Initializing system components...', delay: 180, type: 'loading' },
-    { text: 'Loading kernel modules...', delay: 250, type: 'loading' },
-    { text: 'Mounting file systems...', delay: 130, type: 'loading' },
-    { text: 'Starting network services...', delay: 250, type: 'loading' },
-    { text: 'Loading development environment...', delay: 200, type: 'loading' },
-    { text: 'Initializing portfolio system...', delay: 130, type: 'loading' },
-    { text: 'Loading project data...', delay: 120, type: 'loading' },
-    { text: 'Establishing secure connections...', delay: 250, type: 'loading' },
-    { text: 'System ready', delay: 60, type: 'success' },
-    { text: 'Welcome to Matheus Renzo Portfolio', delay: 290, type: 'welcome' }
+    { text: 'BIOS Version 2.1.0', delay: 120, type: 'info' },
+    { text: 'Initializing system components...', delay: 100, type: 'loading' },
+    { text: 'Loading kernel modules...', delay: 120, type: 'loading' },
+    { text: 'Mounting file systems...', delay: 80, type: 'loading' },
+    { text: 'Starting network services...', delay: 120, type: 'loading' },
+    { text: 'Loading development environment...', delay: 100, type: 'loading' },
+    { text: 'Initializing portfolio system...', delay: 80, type: 'loading' },
+    { text: 'Loading project data...', delay: 70, type: 'loading' },
+    { text: 'Establishing secure connections...', delay: 120, type: 'loading' },
+    { text: 'System ready', delay: 40, type: 'success' },
+    { text: 'Welcome to Matheus Renzo Portfolio', delay: 150, type: 'welcome' }
   ];
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const LoadingScreen = ({ onComplete }) => {
         // Faster completion
         setTimeout(() => {
           onComplete();
-        }, 150);
+        }, 100);
       }
     }, bootSequence[currentStep].delay);
 

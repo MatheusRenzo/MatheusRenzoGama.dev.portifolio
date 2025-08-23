@@ -12,6 +12,9 @@ const nextConfig = {
   // Performance optimizations
   experimental: {
     scrollRestoration: true,
+    // Otimizações para melhor captura de métricas
+    optimizeCss: true,
+    optimizePackageImports: ['@vercel/speed-insights', '@vercel/analytics'],
   },
   
   // Headers for security and performance
@@ -35,6 +38,11 @@ const nextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
+          },
+          // Headers para melhorar métricas de performance
+          {
+            key: 'Vary',
+            value: 'Accept-Encoding, User-Agent',
           },
         ],
       },
@@ -72,6 +80,13 @@ const nextConfig = {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
+          },
+          // Otimização específica para Vercel
+          vercel: {
+            test: /[\\/]node_modules[\\/]@vercel[\\/]/,
+            name: 'vercel',
+            chunks: 'all',
+            priority: 10,
           },
         },
       };

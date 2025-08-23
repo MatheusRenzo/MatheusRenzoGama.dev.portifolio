@@ -136,3 +136,8 @@ temp/
 
 # Turbo
 .turbo
+
+# Deploy automático
+deploy-auto.sh
+deploy-auto.bat
+deploy-auto.ps1

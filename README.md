@@ -267,7 +267,7 @@ SOFTWARE.
 
 **⭐ Se este projeto te ajudou, considere dar uma estrela! ⭐**
 
-**Desenvolvido com ❤️ por [Matheus Renzo Gama](https://github.com/MatheusRenzo)**
+**Desenvolvido por [Matheus Renzo Gama](https://github.com/MatheusRenzo)**
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/matheusrenzo-gama-a396b5367)
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MatheusRenzo)

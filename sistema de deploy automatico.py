@@ -5,7 +5,7 @@ import qtawesome as qta
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton,
     QTextEdit, QLabel, QLineEdit, QProgressBar, QHBoxLayout, QGridLayout,
-    QComboBox, QMessageBox, QTabWidget
+    QComboBox, QMessageBox, QTabWidget, QGroupBox, QFormLayout
 )
 from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QTextCursor, QColor
@@ -58,6 +58,8 @@ class DeployThread(QThread):
     log_signal = Signal(str, str)
     progress_signal = Signal(int)
     commit_message = ""
+    remote_origin = "origin"
+    branch_name = "main"
 
     def run(self):
         try:
@@ -90,8 +92,8 @@ class DeployThread(QThread):
         subprocess.run("git add .", shell=True)
         if subprocess.run(f'git commit -m "{self.commit_message}"', shell=True).returncode == 0:
             self.log_signal.emit("✅ Commit realizado com sucesso!", "success")
-            if subprocess.run("git push origin main", shell=True).returncode == 0:
-                self.log_signal.emit("🚀 Push realizado com sucesso!", "success")
+            if subprocess.run(f"git push {self.remote_origin} {self.branch_name}", shell=True).returncode == 0:
+                self.log_signal.emit(f"🚀 Push realizado com sucesso para {self.remote_origin}/{self.branch_name}!", "success")
             else:
                 self.log_signal.emit("❌ Falha no push", "error")
         else:
@@ -137,8 +139,8 @@ class DeployThread(QThread):
 class DeployGUI(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("🚀 Deploy Automático - Portfolio Matheus Renzo")
-        self.setGeometry(400, 100, 1200, 800)
+        self.setWindowTitle("🚀 Deploy Automático - Projeto Git")
+        self.setGeometry(400, 100, 1400, 900)
         self.setStyleSheet("""
             QWidget {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
@@ -171,6 +173,10 @@ class DeployGUI(QWidget):
             }
         """)
 
+        # Aba Configurações
+        self.config_tab = self.create_config_tab()
+        self.tab_widget.addTab(self.config_tab, "⚙️ Configurações")
+        
         # Aba Deploy
         self.deploy_tab = self.create_deploy_tab()
         self.tab_widget.addTab(self.deploy_tab, "🚀 Deploy")
@@ -192,6 +198,166 @@ class DeployGUI(QWidget):
         self.restore_thread.log_signal.connect(self.update_restore_log)
         self.restore_thread.progress_signal.connect(self.update_restore_progress)
 
+    def create_config_tab(self):
+        tab = QWidget()
+        layout = QVBoxLayout()
+        layout.setSpacing(15)
+
+        # Cabeçalho
+        header = QLabel("⚙️ Configurações do Projeto")
+        header.setStyleSheet("font-size: 24px; font-weight: bold; color: #8b5cf6; text-align: center;")
+        layout.addWidget(header)
+
+        # Grupo de configurações do projeto
+        project_group = QGroupBox("📁 Informações do Projeto")
+        project_group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold; color: #8b5cf6; border: 2px solid #8b5cf6;
+                border-radius: 8px; margin-top: 10px; padding-top: 10px;
+            }
+            QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px 0 5px; }
+        """)
+        project_layout = QFormLayout()
+        
+        self.project_name_input = QLineEdit()
+        self.project_name_input.setPlaceholderText("Ex: meu-projeto, portfolio, blog...")
+        self.project_name_input.setStyleSheet("""
+            background-color: #2d333b; color: #ffffff; padding: 8px;
+            border-radius: 5px; font-size: 14px;
+        """)
+        project_layout.addRow("Nome do Projeto:", self.project_name_input)
+        
+        self.project_description_input = QLineEdit()
+        self.project_description_input.setPlaceholderText("Ex: Portfolio pessoal, Blog de tecnologia...")
+        self.project_description_input.setStyleSheet("""
+            background-color: #2d333b; color: #ffffff; padding: 8px;
+            border-radius: 5px; font-size: 14px;
+        """)
+        project_layout.addRow("Descrição:", self.project_description_input)
+        
+        project_group.setLayout(project_layout)
+        layout.addWidget(project_group)
+
+        # Grupo de configurações Git
+        git_group = QGroupBox("🌿 Configurações Git")
+        git_group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold; color: #8b5cf6; border: 2px solid #8b5cf6;
+                border-radius: 8px; margin-top: 10px; padding-top: 10px;
+            }
+            QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px 0 5px; }
+        """)
+        git_layout = QFormLayout()
+        
+        self.remote_origin_input = QLineEdit()
+        self.remote_origin_input.setPlaceholderText("Ex: origin, upstream, fork...")
+        self.remote_origin_input.setText("origin")
+        self.remote_origin_input.setStyleSheet("""
+            background-color: #2d333b; color: #ffffff; padding: 8px;
+            border-radius: 5px; font-size: 14px;
+        """)
+        git_layout.addRow("Remote Origin:", self.remote_origin_input)
+        
+        self.branch_name_input = QLineEdit()
+        self.branch_name_input.setPlaceholderText("Ex: main, master, develop...")
+        self.branch_name_input.setText("main")
+        self.branch_name_input.setStyleSheet("""
+            background-color: #2d333b; color: #ffffff; padding: 8px;
+            border-radius: 5px; font-size: 14px;
+        """)
+        git_layout.addRow("Branch Principal:", self.branch_name_input)
+        
+        self.repository_url_input = QLineEdit()
+        self.repository_url_input.setPlaceholderText("Ex: git@github.com:usuario/repositorio.git")
+        self.repository_url_input.setStyleSheet("""
+            background-color: #2d333b; color: #ffffff; padding: 8px;
+            border-radius: 5px; font-size: 14px;
+        """)
+        git_layout.addRow("URL do Repositório:", self.repository_url_input)
+        
+        git_group.setLayout(git_layout)
+        layout.addWidget(git_group)
+
+        # Grupo de configurações de build
+        build_group = QGroupBox("🔨 Configurações de Build")
+        build_group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold; color: #8b5cf6; border: 2px solid #8b5cf6;
+                border-radius: 8px; margin-top: 10px; padding-top: 10px;
+            }
+            QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px 0 5px; }
+        """)
+        build_layout = QFormLayout()
+        
+        self.build_command_input = QLineEdit()
+        self.build_command_input.setPlaceholderText("Ex: npm run build, yarn build, python setup.py...")
+        self.build_command_input.setText("npm run build")
+        self.build_command_input.setStyleSheet("""
+            background-color: #2d333b; color: #ffffff; padding: 8px;
+            border-radius: 5px; font-size: 14px;
+        """)
+        build_layout.addRow("Comando de Build:", self.build_command_input)
+        
+        self.package_manager_combo = QComboBox()
+        self.package_manager_combo.addItems(["npm", "yarn", "pnpm", "pip", "poetry", "cargo", "maven", "gradle", "outro"])
+        self.package_manager_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #2d333b; color: #ffffff; padding: 8px;
+                border-radius: 5px; font-size: 14px;
+            }
+        """)
+        build_layout.addRow("Gerenciador de Pacotes:", self.package_manager_combo)
+        
+        build_group.setLayout(build_layout)
+        layout.addWidget(build_group)
+
+        # Botões de ação
+        buttons_layout = QHBoxLayout()
+        
+        self.save_config_button = QPushButton("💾 Salvar Configurações")
+        self.save_config_button.setStyleSheet("""
+            QPushButton {
+                background-color: #059669; font-weight: bold; height: 45px; border-radius: 8px;
+                min-width: 200px;
+            }
+            QPushButton:hover { background-color: #10b981; }
+        """)
+        self.save_config_button.clicked.connect(self.save_configurations)
+        buttons_layout.addWidget(self.save_config_button)
+        
+        self.load_config_button = QPushButton("📂 Carregar Configurações")
+        self.load_config_button.setStyleSheet("""
+            QPushButton {
+                background-color: #8b5cf6; font-weight: bold; height: 45px; border-radius: 8px;
+                min-width: 200px;
+            }
+            QPushButton:hover { background-color: #a371f7; }
+        """)
+        self.load_config_button.clicked.connect(self.load_configurations)
+        buttons_layout.addWidget(self.load_config_button)
+        
+        self.init_repo_button = QPushButton("🚀 Inicializar Repositório")
+        self.init_repo_button.setStyleSheet("""
+            QPushButton {
+                background-color: #dc2626; font-weight: bold; height: 45px; border-radius: 8px;
+                min-width: 200px;
+            }
+            QPushButton:hover { background-color: #ef4444; }
+        """)
+        self.init_repo_button.clicked.connect(self.initialize_repository)
+        buttons_layout.addWidget(self.init_repo_button)
+        
+        layout.addLayout(buttons_layout)
+        
+        # Área de status
+        self.config_status_label = QLabel("Configurações não salvas")
+        self.config_status_label.setStyleSheet("color: #fbbf24; font-size: 14px; text-align: center; padding: 10px;")
+        layout.addWidget(self.config_status_label)
+        
+        layout.addStretch()
+        tab.setLayout(layout)
+        return tab
+
     def create_deploy_tab(self):
         tab = QWidget()
         layout = QVBoxLayout()
@@ -203,7 +369,7 @@ class DeployGUI(QWidget):
         github_icon = qta.icon('fa6b.github', color='white')
         self.logo_label.setPixmap(github_icon.pixmap(50, 50))
         header_layout.addWidget(self.logo_label)
-        self.header = QLabel("GitHub Deploy Automático - Portfolio Matheus Renzo")
+        self.header = QLabel("GitHub Deploy Automático")
         self.header.setStyleSheet("font-size: 24px; font-weight: bold; color: #8b5cf6;")
         header_layout.addWidget(self.header)
         header_layout.addStretch()
@@ -214,7 +380,7 @@ class DeployGUI(QWidget):
         self.commit_label.setStyleSheet("color: #8b5cf6; font-weight: bold; font-size: 14px;")
         layout.addWidget(self.commit_label)
         self.commit_input = QLineEdit()
-        self.commit_input.setPlaceholderText("Ex: Atualização do portfolio, correção de bugs...")
+        self.commit_input.setPlaceholderText("Ex: Atualização do projeto, correção de bugs...")
         self.commit_input.setStyleSheet("""
             background-color: #2d333b; color: #ffffff; padding: 8px;
             border-radius: 5px; font-size: 14px;
@@ -384,6 +550,110 @@ class DeployGUI(QWidget):
         
         tab.setLayout(layout)
         return tab
+
+    def save_configurations(self):
+        try:
+            config = {
+                'project_name': self.project_name_input.text(),
+                'project_description': self.project_description_input.text(),
+                'remote_origin': self.remote_origin_input.text(),
+                'branch_name': self.branch_name_input.text(),
+                'repository_url': self.repository_url_input.text(),
+                'build_command': self.build_command_input.text(),
+                'package_manager': self.package_manager_combo.currentText()
+            }
+            
+            # Salvar em arquivo de configuração
+            with open('deploy_config.json', 'w', encoding='utf-8') as f:
+                import json
+                json.dump(config, f, indent=2, ensure_ascii=False)
+            
+            self.config_status_label.setText("✅ Configurações salvas com sucesso!")
+            self.config_status_label.setStyleSheet("color: #10b981; font-size: 14px; text-align: center; padding: 10px;")
+            
+            # Atualizar threads com novas configurações
+            self.deploy_thread.remote_origin = config['remote_origin']
+            self.deploy_thread.branch_name = config['branch_name']
+            
+        except Exception as e:
+            self.config_status_label.setText(f"❌ Erro ao salvar: {e}")
+            self.config_status_label.setStyleSheet("color: #ef4444; font-size: 14px; text-align: center; padding: 10px;")
+
+    def load_configurations(self):
+        try:
+            import json
+            with open('deploy_config.json', 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            
+            self.project_name_input.setText(config.get('project_name', ''))
+            self.project_description_input.setText(config.get('project_description', ''))
+            self.remote_origin_input.setText(config.get('remote_origin', 'origin'))
+            self.branch_name_input.setText(config.get('branch_name', 'main'))
+            self.repository_url_input.setText(config.get('repository_url', ''))
+            self.build_command_input.setText(config.get('build_command', 'npm run build'))
+            
+            package_manager = config.get('package_manager', 'npm')
+            index = self.package_manager_combo.findText(package_manager)
+            if index >= 0:
+                self.package_manager_combo.setCurrentIndex(index)
+            
+            self.config_status_label.setText("✅ Configurações carregadas com sucesso!")
+            self.config_status_label.setStyleSheet("color: #10b981; font-size: 14px; text-align: center; padding: 10px;")
+            
+        except FileNotFoundError:
+            self.config_status_label.setText("📁 Arquivo de configuração não encontrado")
+            self.config_status_label.setStyleSheet("color: #fbbf24; font-size: 14px; text-align: center; padding: 10px;")
+        except Exception as e:
+            self.config_status_label.setText(f"❌ Erro ao carregar: {e}")
+            self.config_status_label.setStyleSheet("color: #ef4444; font-size: 14px; text-align: center; padding: 10px;")
+
+    def initialize_repository(self):
+        try:
+            project_name = self.project_name_input.text().strip()
+            repository_url = self.repository_url_input.text().strip()
+            
+            if not project_name:
+                QMessageBox.warning(self, "Aviso", "Por favor, informe o nome do projeto!")
+                return
+                
+            if not repository_url:
+                QMessageBox.warning(self, "Aviso", "Por favor, informe a URL do repositório!")
+                return
+            
+            # Criar README.md
+            readme_content = f"# {project_name}\n\n"
+            if self.project_description_input.text().strip():
+                readme_content += f"{self.project_description_input.text().strip()}\n\n"
+            readme_content += "## Como usar\n\n1. Clone o repositório\n2. Instale as dependências\n3. Execute o projeto\n\n## Tecnologias\n\n- Lista de tecnologias utilizadas\n\n## Autor\n\nSeu nome aqui"
+            
+            with open('README.md', 'w', encoding='utf-8') as f:
+                f.write(readme_content)
+            
+            # Comandos Git
+            commands = [
+                f'echo "# {project_name}" > README.md',
+                'git init',
+                'git add README.md',
+                'git commit -m "first commit"',
+                f'git branch -M {self.branch_name_input.text()}',
+                f'git remote add {self.remote_origin_input.text()} {repository_url}',
+                f'git push -u {self.remote_origin_input.text()} {self.branch_name_input.text()}'
+            ]
+            
+            # Executar comandos
+            for cmd in commands:
+                if cmd.startswith('echo'):
+                    continue  # Já criamos o README
+                elif cmd.startswith('git'):
+                    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+                    if result.returncode != 0:
+                        QMessageBox.critical(self, "Erro", f"Erro ao executar: {cmd}\n{result.stderr}")
+                        return
+            
+            QMessageBox.information(self, "Sucesso", f"Repositório '{project_name}' inicializado com sucesso!")
+            
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao inicializar repositório: {e}")
 
     def refresh_commits(self):
         try:

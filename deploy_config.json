@@ -1,0 +1,9 @@
+{
+  "project_name": "projeto",
+  "project_description": "teste",
+  "remote_origin": "origin",
+  "branch_name": "main",
+  "repository_url": "git@github.com:MatheusRenzo/matheusrenzogama.dev.git",
+  "build_command": "npm run build",
+  "package_manager": "npm"
+}

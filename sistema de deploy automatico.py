@@ -4,10 +4,55 @@ import time
 import qtawesome as qta
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton,
-    QTextEdit, QLabel, QLineEdit, QProgressBar, QHBoxLayout, QGridLayout
+    QTextEdit, QLabel, QLineEdit, QProgressBar, QHBoxLayout, QGridLayout,
+    QComboBox, QMessageBox, QTabWidget
 )
 from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QTextCursor, QColor
+
+class RestoreThread(QThread):
+    log_signal = Signal(str, str)
+    progress_signal = Signal(int)
+    commit_hash = ""
+
+    def run(self):
+        try:
+            if not self.commit_hash:
+                self.log_signal.emit("❌ Nenhum commit selecionado", "error")
+                return
+                
+            self.log_signal.emit(f"🔄 Iniciando restore para commit: {self.commit_hash[:8]}", "info")
+            self.progress_signal.emit(20)
+            
+            # Verificar se o commit existe
+            result = subprocess.run(f"git show {self.commit_hash}", shell=True, capture_output=True)
+            if result.returncode != 0:
+                self.log_signal.emit(f"❌ Commit {self.commit_hash} não encontrado", "error")
+                return
+                
+            self.progress_signal.emit(40)
+            
+            # Fazer hard reset
+            self.log_signal.emit("🔄 Executando hard reset...", "info")
+            result = subprocess.run(f"git reset --hard {self.commit_hash}", shell=True, capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                self.progress_signal.emit(80)
+                self.log_signal.emit("✅ Hard reset realizado com sucesso!", "success")
+                
+                # Limpar arquivos não rastreados (opcional)
+                self.log_signal.emit("🧹 Limpando arquivos não rastreados...", "info")
+                subprocess.run("git clean -fd", shell=True, capture_output=True)
+                
+                self.progress_signal.emit(100)
+                self.log_signal.emit("🎉 Restore finalizado com sucesso!", "success")
+                self.log_signal.emit(f"📝 Projeto restaurado para: {result.stdout.strip()}", "info")
+            else:
+                self.log_signal.emit(f"❌ Erro no hard reset: {result.stderr}", "error")
+                
+        except Exception as e:
+            self.log_signal.emit(f"❌ Erro inesperado: {e}", "error")
+            self.progress_signal.emit(0)
 
 class DeployThread(QThread):
     log_signal = Signal(str, str)
@@ -93,7 +138,7 @@ class DeployGUI(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("🚀 Deploy Automático - Portfolio Matheus Renzo")
-        self.setGeometry(400, 100, 1000, 700)
+        self.setGeometry(400, 100, 1200, 800)
         self.setStyleSheet("""
             QWidget {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
@@ -103,6 +148,52 @@ class DeployGUI(QWidget):
             }
         """)
 
+        # Criar abas
+        self.tab_widget = QTabWidget()
+        self.tab_widget.setStyleSheet("""
+            QTabWidget::pane {
+                border: 1px solid #8b5cf6;
+                background: transparent;
+            }
+            QTabBar::tab {
+                background-color: #2d333b;
+                color: #ffffff;
+                padding: 10px 20px;
+                margin-right: 2px;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+            }
+            QTabBar::tab:selected {
+                background-color: #8b5cf6;
+            }
+            QTabBar::tab:hover {
+                background-color: #a371f7;
+            }
+        """)
+
+        # Aba Deploy
+        self.deploy_tab = self.create_deploy_tab()
+        self.tab_widget.addTab(self.deploy_tab, "🚀 Deploy")
+        
+        # Aba Restore
+        self.restore_tab = self.create_restore_tab()
+        self.tab_widget.addTab(self.restore_tab, "🔄 Restore")
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.tab_widget)
+        self.setLayout(layout)
+
+        # Threads
+        self.deploy_thread = DeployThread()
+        self.deploy_thread.log_signal.connect(self.update_deploy_log)
+        self.deploy_thread.progress_signal.connect(self.update_deploy_progress)
+        
+        self.restore_thread = RestoreThread()
+        self.restore_thread.log_signal.connect(self.update_restore_log)
+        self.restore_thread.progress_signal.connect(self.update_restore_progress)
+
+    def create_deploy_tab(self):
+        tab = QWidget()
         layout = QVBoxLayout()
         layout.setSpacing(12)
 
@@ -184,9 +275,7 @@ class DeployGUI(QWidget):
         self.run_button.setStyleSheet("""
             QPushButton {
                 background-color: #8b5cf6;
-                font-weight: bold;
-                height: 45px;
-                border-radius: 8px;
+                font-weight: bold; height: 45px; border-radius: 8px;
             }
             QPushButton:hover {
                 background-color: #a371f7;
@@ -198,20 +287,179 @@ class DeployGUI(QWidget):
         self.run_button.clicked.connect(self.start_deploy)
         layout.addWidget(self.run_button)
 
-        self.setLayout(layout)
+        tab.setLayout(layout)
+        return tab
 
-        self.deploy_thread = DeployThread()
-        self.deploy_thread.log_signal.connect(self.update_log)
-        self.deploy_thread.progress_signal.connect(self.update_progress)
+    def create_restore_tab(self):
+        tab = QWidget()
+        layout = QVBoxLayout()
+        layout.setSpacing(12)
 
-    def run_git_command(self, command, description):
-        self.update_log(f"💻 Executando: {description}", "info")
+        # Cabeçalho do restore
+        restore_header = QLabel("🔄 Restore do Projeto - Hard Reset")
+        restore_header.setStyleSheet("font-size: 24px; font-weight: bold; color: #ef4444; text-align: center;")
+        layout.addWidget(restore_header)
+
+        # Aviso importante
+        warning_label = QLabel("⚠️ ATENÇÃO: Esta operação irá descartar TODAS as mudanças não commitadas!")
+        warning_label.setStyleSheet("color: #fbbf24; font-weight: bold; font-size: 16px; text-align: center; padding: 10px;")
+        layout.addWidget(warning_label)
+
+        # Seleção de commit
+        commit_select_layout = QHBoxLayout()
+        commit_select_layout.addWidget(QLabel("Selecionar commit para restaurar:"))
+        
+        self.commit_combo = QComboBox()
+        self.commit_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #2d333b; color: #ffffff; padding: 8px;
+                border-radius: 5px; font-size: 14px; min-width: 300px;
+            }
+        """)
+        self.refresh_commits_button = QPushButton("🔄 Atualizar")
+        self.refresh_commits_button.setStyleSheet("""
+            QPushButton {
+                background-color: #059669; font-weight: bold; height: 40px; border-radius: 6px;
+            }
+            QPushButton:hover { background-color: #10b981; }
+        """)
+        self.refresh_commits_button.clicked.connect(self.refresh_commits)
+        
+        commit_select_layout.addWidget(self.commit_combo)
+        commit_select_layout.addWidget(self.refresh_commits_button)
+        commit_select_layout.addStretch()
+        layout.addLayout(commit_select_layout)
+
+        # Informações do commit selecionado
+        self.commit_info_label = QLabel("Selecione um commit para ver detalhes")
+        self.commit_info_label.setStyleSheet("color: #8b5cf6; font-size: 14px; padding: 10px; background-color: #1e1e2e; border-radius: 5px;")
+        layout.addWidget(self.commit_info_label)
+
+        # Área de logs do restore
+        self.restore_log_area = QTextEdit()
+        self.restore_log_area.setReadOnly(True)
+        self.restore_log_area.setStyleSheet("""
+            background-color: #1e1e2e; border-radius: 5px; padding: 10px;
+            font-size: 13px; color: #ffffff;
+        """)
+        layout.addWidget(self.restore_log_area)
+
+        # Barra de progresso do restore
+        self.restore_progress_bar = QProgressBar()
+        self.restore_progress_bar.setValue(0)
+        self.restore_progress_bar.setStyleSheet("""
+            QProgressBar {
+                background-color: #333;
+                color: #ffffff;
+                border-radius: 5px;
+                height: 20px;
+                text-align: center;
+            }
+            QProgressBar::chunk {
+                background-color: #ef4444;
+                border-radius: 5px;
+            }
+        """)
+        layout.addWidget(self.restore_progress_bar)
+
+        # Botão de restore
+        self.restore_button = QPushButton("🔄 Executar Restore (Hard Reset)")
+        self.restore_button.setStyleSheet("""
+            QPushButton {
+                background-color: #ef4444;
+                font-weight: bold; height: 45px; border-radius: 8px;
+            }
+            QPushButton:hover {
+                background-color: #f87171;
+            }
+            QPushButton:pressed {
+                background-color: #dc2626;
+            }
+        """)
+        self.restore_button.clicked.connect(self.start_restore)
+        layout.addWidget(self.restore_button)
+
+        # Carregar commits iniciais
+        self.refresh_commits()
+        
+        tab.setLayout(layout)
+        return tab
+
+    def refresh_commits(self):
         try:
-            result = subprocess.getoutput(command)
-            for line in result.splitlines():
-                self.update_log(line, "info")
+            # Buscar commits recentes
+            result = subprocess.getoutput("git log --oneline -20")
+            commits = result.splitlines()
+            
+            self.commit_combo.clear()
+            self.commit_combo.addItem("Selecione um commit...", "")
+            
+            for commit in commits:
+                if commit.strip():
+                    parts = commit.split(' ', 1)
+                    if len(parts) == 2:
+                        hash_short = parts[0]
+                        message = parts[1]
+                        display_text = f"{hash_short[:8]} - {message}"
+                        self.commit_combo.addItem(display_text, hash_short)
+            
+            # Conectar evento de mudança
+            self.commit_combo.currentIndexChanged.connect(self.on_commit_selected)
+            
         except Exception as e:
-            self.update_log(f"Erro ao executar {description}: {e}", "error")
+            self.update_restore_log(f"Erro ao carregar commits: {e}", "error")
+
+    def on_commit_selected(self):
+        current_data = self.commit_combo.currentData()
+        if current_data:
+            try:
+                # Buscar informações detalhadas do commit
+                result = subprocess.getoutput(f"git show --stat {current_data}")
+                lines = result.splitlines()
+                
+                if lines:
+                    # Primeiras linhas contêm informações do commit
+                    commit_info = "\n".join(lines[:10])
+                    self.commit_info_label.setText(f"📝 Commit: {current_data[:8]}\n{commit_info}")
+                    
+                    # Buscar arquivos modificados
+                    files_result = subprocess.getoutput(f"git show --name-only {current_data}")
+                    files_lines = files_result.splitlines()
+                    if len(files_lines) > 6:  # Pular cabeçalho
+                        files = files_lines[6:]
+                        if files:
+                            self.commit_info_label.setText(self.commit_info_label.text() + f"\n\n📁 Arquivos modificados:\n" + "\n".join(files[:10]))
+                            if len(files) > 10:
+                                self.commit_info_label.setText(self.commit_info_label.text() + f"\n... e mais {len(files) - 10} arquivos")
+            except Exception as e:
+                self.commit_info_label.setText(f"Erro ao carregar detalhes: {e}")
+
+    def start_restore(self):
+        current_data = self.commit_combo.currentData()
+        if not current_data:
+            QMessageBox.warning(self, "Aviso", "Por favor, selecione um commit para restaurar!")
+            return
+        
+        # Confirmação final
+        reply = QMessageBox.question(
+            self, 
+            "Confirmação de Restore", 
+            f"⚠️ ATENÇÃO: Esta operação irá:\n\n"
+            f"1. Descartar TODAS as mudanças não commitadas\n"
+            f"2. Fazer hard reset para o commit: {current_data[:8]}\n"
+            f"3. Limpar arquivos não rastreados\n\n"
+            f"Esta ação NÃO pode ser desfeita!\n\n"
+            f"Tem certeza que deseja continuar?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            self.restore_thread.commit_hash = current_data
+            self.restore_log_area.clear()
+            self.restore_progress_bar.setValue(0)
+            self.restore_thread.start()
+            self.restore_button.setEnabled(False)
 
     def start_deploy(self):
         self.deploy_thread.commit_message = self.commit_input.text().strip()
@@ -220,7 +468,16 @@ class DeployGUI(QWidget):
         self.deploy_thread.start()
         self.run_button.setEnabled(False)
 
-    def update_log(self, message, msg_type):
+    def run_git_command(self, command, description):
+        self.update_deploy_log(f"💻 Executando: {description}", "info")
+        try:
+            result = subprocess.getoutput(command)
+            for line in result.splitlines():
+                self.update_deploy_log(line, "info")
+        except Exception as e:
+            self.update_deploy_log(f"Erro ao executar {description}: {e}", "error")
+
+    def update_deploy_log(self, message, msg_type):
         color = "#ffffff"
         if msg_type == "success":
             color = "#00ff00"
@@ -236,8 +493,27 @@ class DeployGUI(QWidget):
         if "finalizado" in message.lower() or "erro inesperado" in message.lower():
             self.run_button.setEnabled(True)
 
-    def update_progress(self, value):
+    def update_deploy_progress(self, value):
         self.progress_bar.setValue(value)
+
+    def update_restore_log(self, message, msg_type):
+        color = "#ffffff"
+        if msg_type == "success":
+            color = "#00ff00"
+        elif msg_type == "error":
+            color = "#ff6b6b"
+        elif msg_type == "info":
+            color = "#58a6ff"
+
+        self.restore_log_area.setTextColor(QColor(color))
+        self.restore_log_area.append(message)
+        self.restore_log_area.moveCursor(QTextCursor.End)
+
+        if "finalizado" in message.lower() or "erro inesperado" in message.lower():
+            self.restore_button.setEnabled(True)
+
+    def update_restore_progress(self, value):
+        self.restore_progress_bar.setValue(value)
 
 
 if __name__ == "__main__":

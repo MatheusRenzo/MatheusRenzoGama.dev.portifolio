@@ -1,9 +1,7 @@
 {
-  "project_name": "matheusrenzogama.dev",
-  "project_description": "Projeto matheusrenzogama.dev",
+  "project_name": "MatheusRenzoGama.dev.portifolio",
+  "project_description": "Projeto MatheusRenzoGama.dev.portifolio",
   "remote_origin": "origin",
   "branch_name": "main",
-  "repository_url": "git@github.com:MatheusRenzo/matheusrenzogama.dev.git",
-  "build_command": "npm run build",
-  "package_manager": "npm"
+  "repository_url": "git@github.com:MatheusRenzo/MatheusRenzoGama.dev.portifolio.git"
 }

@@ -70,22 +70,25 @@ class DeployThread(QThread):
                     self.commit_message = f"Deploy automático - {time.strftime('%d/%m/%Y %H:%M:%S')}"
                     self.log_signal.emit(f"Usando mensagem padrão: {self.commit_message}", "info")
                 self.do_commit_push()
-                self.progress_signal.emit(30)
-                self.run_build()
                 self.progress_signal.emit(100)
                 self.log_signal.emit("🎉 Deploy finalizado com sucesso!", "success")
             else:
-                self.log_signal.emit("Nenhuma mudança detectada. Build não será executado.", "info")
+                self.log_signal.emit("Nenhuma mudança detectada.", "info")
         except Exception as e:
             self.log_signal.emit(f"Erro inesperado: {e}", "error")
             self.progress_signal.emit(0)
 
     def check_git_changes(self):
-        status = subprocess.getoutput("git status --branch --short").strip()
-        if not status:
+        try:
+            result = subprocess.run("git status --branch --short", shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+            status = result.stdout.strip()
+            if not status:
+                return False
+            self.parse_git_status(status)
+            return True
+        except Exception as e:
+            self.log_signal.emit(f"Erro ao verificar mudanças: {e}", "error")
             return False
-        self.parse_git_status(status)
-        return True
 
     def do_commit_push(self):
         self.log_signal.emit(f"✏️ Commit: {self.commit_message}", "info")
@@ -99,18 +102,7 @@ class DeployThread(QThread):
         else:
             self.log_signal.emit("❌ Falha no commit", "error")
 
-    def run_build(self):
-        self.log_signal.emit("🔨 Iniciando build do projeto...", "info")
-        if subprocess.run("npm --version", shell=True).returncode != 0:
-            self.log_signal.emit("❌ NPM não encontrado. Verifique Node.js.", "error")
-            raise Exception("NPM não encontrado")
-        result = subprocess.run("npm run build", shell=True, capture_output=True, text=True)
-        if result.returncode == 0:
-            self.log_signal.emit("✅ Build realizado com sucesso!", "success")
-        else:
-            self.log_signal.emit("❌ Falha no build", "error")
-            self.log_signal.emit(result.stdout + "\n" + result.stderr, "error")
-            raise Exception("Falha no build")
+
 
     def parse_git_status(self, status_output):
         lines = status_output.splitlines()
@@ -333,7 +325,8 @@ class DeployGUI(QWidget):
             # Verificar se já existe um repositório Git
             if subprocess.run("git status", shell=True, capture_output=True).returncode == 0:
                 # Repositório já existe, verificar se é o mesmo
-                current_remote = subprocess.getoutput("git remote get-url origin").strip()
+                result = subprocess.run("git remote get-url origin", shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+                current_remote = result.stdout.strip()
                 
                 if current_remote and current_remote != repository_url:
                     # Repositório diferente, perguntar se quer sobrescrever
@@ -414,8 +407,7 @@ class DeployGUI(QWidget):
                 'remote_origin': remote_name,
                 'branch_name': branch_name,
                 'repository_url': repository_url,
-                'build_command': 'npm run build',
-                'package_manager': 'npm'
+
             }
             
             with open('deploy_config.json', 'w', encoding='utf-8') as f:
@@ -514,17 +506,6 @@ class DeployGUI(QWidget):
         self.view_changes_button.clicked.connect(self.view_git_changes)
         buttons_layout.addWidget(self.view_changes_button)
         
-        self.view_logs_button = QPushButton("📋 Ver Logs")
-        self.view_logs_button.setStyleSheet("""
-            QPushButton {
-                background-color: #8b5cf6; font-weight: bold; height: 40px; border-radius: 6px;
-                min-width: 150px;
-            }
-            QPushButton:hover { background-color: #a371f7; }
-        """)
-        self.view_logs_button.clicked.connect(self.view_git_logs)
-        buttons_layout.addWidget(self.view_logs_button)
-        
         buttons_layout.addStretch()
         layout.addLayout(buttons_layout)
 
@@ -596,11 +577,7 @@ class DeployGUI(QWidget):
                     configured_repo = config.get('repository_url', '')
                     configured_name = config.get('project_name', '')
                     
-                    # Debug: mostrar o que foi carregado
-                    self.log_area.setTextColor(QColor("#fbbf24"))
-                    self.log_area.append(f"🔍 DEBUG - Configurações carregadas:\n")
-                    self.log_area.append(f"📁 Nome: {configured_name}\n")
-                    self.log_area.append(f"🔗 URL: {configured_repo}\n")
+
                     
             except FileNotFoundError:
                 self.log_area.setTextColor(QColor("#ff6b6b"))
@@ -613,11 +590,10 @@ class DeployGUI(QWidget):
                 return
             
             # Verificar se o remote atual corresponde ao configurado
-            current_remote = subprocess.getoutput("git remote get-url origin").strip()
+            result = subprocess.run("git remote get-url origin", shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+            current_remote = result.stdout.strip()
             
-            # Debug: mostrar remote atual
-            self.log_area.setTextColor(QColor("#fbbf24"))
-            self.log_area.append(f"🔍 DEBUG - Remote atual: {current_remote}\n")
+
             
             if not configured_repo:
                 self.log_area.setTextColor(QColor("#ff6b6b"))
@@ -627,12 +603,68 @@ class DeployGUI(QWidget):
             
             if current_remote != configured_repo:
                 self.log_area.setTextColor(QColor("#fbbf24"))
-                self.log_area.append(f"⚠️ ATENÇÃO: Repositório configurado diferente do atual!\n")
-                self.log_area.append(f"📁 Configurado: {configured_name}\n")
-                self.log_area.append(f"🔗 Remote configurado: {configured_repo}\n")
-                self.log_area.append(f"🔗 Remote atual: {current_remote}\n")
-                self.log_area.append(f"💡 Use a aba Configurações para corrigir!\n")
-                return
+                self.log_area.append(f"🔄 Repositório mudou! Atualizando configurações automaticamente...\n")
+                
+                # Atualizar configurações automaticamente
+                try:
+                    # Extrair nome do projeto do remote atual
+                    new_project_name = current_remote.split('/')[-1].replace('.git', '')
+                    
+                    # IMPORTANTE: Alterar o remote da pasta para o configurado
+                    self.log_area.setTextColor(QColor("#fbbf24"))
+                    self.log_area.append(f"🔄 Alterando remote da pasta para: {configured_repo}\n")
+                    
+                    # Executar git remote set-url para alterar o remote da pasta
+                    result = subprocess.run(f"git remote set-url origin {configured_repo}", shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+                    
+                    if result.returncode == 0:
+                        self.log_area.setTextColor(QColor("#10b981"))
+                        self.log_area.append(f"✅ Remote da pasta alterado com sucesso!\n")
+                        
+                        # Verificar se alterou
+                        verify_result = subprocess.run("git remote get-url origin", shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+                        new_current_remote = verify_result.stdout.strip()
+                        
+                        if new_current_remote == configured_repo:
+                            self.log_area.append(f"✅ Verificação: Remote alterado para {new_current_remote}\n")
+                            current_remote = new_current_remote
+                        else:
+                            self.log_area.setTextColor(QColor("#ff6b6b"))
+                            self.log_area.append(f"❌ Falha na verificação: Remote ainda é {new_current_remote}\n")
+                            return
+                    else:
+                        self.log_area.setTextColor(QColor("#ff6b6b"))
+                        self.log_area.append(f"❌ Erro ao alterar remote: {result.stderr}\n")
+                        return
+                    
+                    # Atualizar configurações
+                    config = {
+                        'project_name': configured_name,
+                        'project_description': f"Projeto {configured_name}",
+                        'remote_origin': 'origin',
+                        'branch_name': 'main',
+                        'repository_url': configured_repo
+                    }
+                    
+                    # Salvar configurações atualizadas
+                    with open('deploy_config.json', 'w', encoding='utf-8') as f:
+                        import json
+                        json.dump(config, f, indent=2, ensure_ascii=False)
+                    
+                    # Atualizar threads
+                    self.deploy_thread.remote_origin = 'origin'
+                    self.deploy_thread.branch_name = 'main'
+                    
+                    self.log_area.setTextColor(QColor("#10b981"))
+                    self.log_area.append(f"✅ Configurações atualizadas automaticamente!\n")
+                    self.log_area.append(f"📁 Nome: {configured_name}\n")
+                    self.log_area.append(f"🔗 Remote: {configured_repo}\n")
+                    
+                except Exception as e:
+                    self.log_area.setTextColor(QColor("#ff6b6b"))
+                    self.log_area.append(f"❌ Erro ao atualizar configurações: {e}\n")
+                    self.log_area.append(f"💡 Use a aba Configurações para corrigir manualmente!\n")
+                    return
             
             # Mostrar informações do repositório
             self.log_area.setTextColor(QColor("#8b5cf6"))
@@ -641,16 +673,16 @@ class DeployGUI(QWidget):
             self.log_area.append(f"🔗 Remote: {current_remote}\n\n")
             
             # Mostrar status do repositório
-            result = subprocess.getoutput("git status --branch --short")
-            if result.strip():
+            result = subprocess.run("git status --branch --short", shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+            if result.stdout.strip():
                 self.log_area.setTextColor(QColor("#ffffff"))
                 self.log_area.append("📊 Status do repositório:\n")
-                self.log_area.append(result)
+                self.log_area.append(result.stdout)
                 
                 # Mostrar arquivos modificados
                 self.log_area.setTextColor(QColor("#58a6ff"))
                 self.log_area.append("\n📁 Arquivos modificados:")
-                for line in result.splitlines():
+                for line in result.stdout.splitlines():
                     if line.strip() and not line.startswith('##'):
                         code = line[:2].strip()
                         file = line[3:]
@@ -671,90 +703,7 @@ class DeployGUI(QWidget):
             self.log_area.setTextColor(QColor("#ff6b6b"))
             self.log_area.append(f"❌ Erro ao verificar alterações: {e}")
 
-    def view_git_logs(self):
-        """Mostra logs do repositório atual"""
-        try:
-            self.log_area.clear()
-            self.log_area.setTextColor(QColor("#58a6ff"))
-            self.log_area.append("📋 Carregando logs do repositório atual...\n")
-            
-            # Verificar se estamos em um repositório Git
-            if subprocess.run("git status", shell=True, capture_output=True).returncode != 0:
-                self.log_area.setTextColor(QColor("#ff6b6b"))
-                self.log_area.append("❌ Não é um repositório Git válido!")
-                return
-            
-            # Verificar se as configurações estão carregadas
-            try:
-                with open('deploy_config.json', 'r', encoding='utf-8') as f:
-                    import json
-                    config = json.load(f)
-                    configured_repo = config.get('repository_url', '')
-                    configured_name = config.get('project_name', '')
-                    
-                    # Debug: mostrar o que foi carregado
-                    self.log_area.setTextColor(QColor("#fbbf24"))
-                    self.log_area.append(f"🔍 DEBUG - Configurações carregadas:\n")
-                    self.log_area.append(f"📁 Nome: {configured_name}\n")
-                    self.log_area.append(f"🔗 URL: {configured_repo}\n")
-                    
-            except FileNotFoundError:
-                self.log_area.setTextColor(QColor("#ff6b6b"))
-                self.log_area.append("❌ Arquivo de configuração não encontrado!\n")
-                self.log_area.append("💡 Configure o projeto primeiro na aba Configurações!\n")
-                return
-            except Exception as e:
-                self.log_area.setTextColor(QColor("#ff6b6b"))
-                self.log_area.append(f"❌ Erro ao carregar configurações: {e}\n")
-                return
-            
-            # Verificar se o remote atual corresponde ao configurado
-            current_remote = subprocess.getoutput("git remote get-url origin").strip()
-            
-            # Debug: mostrar remote atual
-            self.log_area.setTextColor(QColor("#fbbf24"))
-            self.log_area.append(f"🔍 DEBUG - Remote atual: {current_remote}\n")
-            
-            if not configured_repo:
-                self.log_area.setTextColor(QColor("#ff6b6b"))
-                self.log_area.append("❌ Nenhum repositório configurado!\n")
-                self.log_area.append("💡 Configure o projeto primeiro na aba Configurações!\n")
-                return
-            
-            if current_remote != configured_repo:
-                self.log_area.setTextColor(QColor("#fbbf24"))
-                self.log_area.append(f"⚠️ ATENÇÃO: Repositório configurado diferente do atual!\n")
-                self.log_area.append(f"📁 Configurado: {configured_name}\n")
-                self.log_area.append(f"🔗 Remote configurado: {configured_repo}\n")
-                self.log_area.append(f"🔗 Remote atual: {current_remote}\n")
-                self.log_area.append(f"💡 Use a aba Configurações para corrigir!\n")
-                return
-            
-            # Mostrar informações do repositório
-            self.log_area.setTextColor(QColor("#8b5cf6"))
-            self.log_area.append(f"✅ Repositório correto detectado!\n")
-            self.log_area.append(f" Nome: {configured_name}\n")
-            self.log_area.append(f"🔗 Remote: {current_remote}\n\n")
-            
-            # Mostrar logs recentes📁
-            result = subprocess.getoutput("git log --oneline -10")
-            if result.strip():
-                self.log_area.setTextColor(QColor("#ffffff"))
-                self.log_area.append("📝 Últimos 10 commits:\n")
-                self.log_area.append(result)
-                
-                # Mostrar branch atual
-                branch_result = subprocess.getoutput("git branch --show-current")
-                if branch_result.strip():
-                    self.log_area.setTextColor(QColor("#8b5cf6"))
-                    self.log_area.append(f"\n🌿 Branch atual: {branch_result.strip()}")
-            else:
-                self.log_area.setTextColor(QColor("#fbbf24"))
-                self.log_area.append("⚠️ Nenhum commit encontrado!")
-                
-        except Exception as e:
-            self.log_area.setTextColor(QColor("#ff6b6b"))
-            self.log_area.append(f"❌ Erro ao carregar logs: {e}")
+
 
     def create_restore_tab(self):
         tab = QWidget()
@@ -854,8 +803,8 @@ class DeployGUI(QWidget):
     def refresh_commits(self):
         try:
             # Buscar commits recentes
-            result = subprocess.getoutput("git log --oneline -20")
-            commits = result.splitlines()
+            result = subprocess.run("git log --oneline -20", shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+            commits = result.stdout.splitlines()
             
             self.commit_combo.clear()
             self.commit_combo.addItem("Selecione um commit...", "")
@@ -880,8 +829,8 @@ class DeployGUI(QWidget):
         if current_data:
             try:
                 # Buscar informações detalhadas do commit
-                result = subprocess.getoutput(f"git show --stat {current_data}")
-                lines = result.splitlines()
+                result = subprocess.run(f"git show --stat {current_data}", shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+                lines = result.stdout.splitlines()
                 
                 if lines:
                     # Primeiras linhas contêm informações do commit
@@ -889,8 +838,8 @@ class DeployGUI(QWidget):
                     self.commit_info_label.setText(f"📝 Commit: {current_data[:8]}\n{commit_info}")
                     
                     # Buscar arquivos modificados
-                    files_result = subprocess.getoutput(f"git show --name-only {current_data}")
-                    files_lines = files_result.splitlines()
+                    files_result = subprocess.run(f"git show --name-only {current_data}", shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+                    files_lines = files_result.stdout.splitlines()
                     if len(files_lines) > 6:  # Pular cabeçalho
                         files = files_lines[6:]
                         if files:
@@ -937,8 +886,8 @@ class DeployGUI(QWidget):
     def run_git_command(self, command, description):
         self.update_deploy_log(f"💻 Executando: {description}", "info")
         try:
-            result = subprocess.getoutput(command)
-            for line in result.splitlines():
+            result = subprocess.run(command, shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+            for line in result.stdout.splitlines():
                 self.update_deploy_log(line, "info")
         except Exception as e:
             self.update_deploy_log(f"Erro ao executar {description}: {e}", "error")
@@ -986,4 +935,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = DeployGUI()
     window.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec())    

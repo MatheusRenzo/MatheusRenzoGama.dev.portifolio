@@ -8,9 +8,9 @@ const Hero = ({ onNavigate }) => {
   const [currentStat, setCurrentStat] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const stats = [
-    { icon: FaDatabase, value: "75%", label: "Backend & APIs", color: "text-green-400" },
-    { icon: FaReact, value: "65%", label: "React & Frontend", color: "text-blue-400" },
-    { icon: FaNodeJs, value: "99%", label: "DB & Data", color: "text-purple-400" }
+    { icon: FaDatabase, value: "90%", label: "Backend & APIs", color: "text-green-400" },
+    { icon: FaReact, value: "65%", label: "Frontend & UI/UX", color: "text-blue-400" },
+    { icon: FaNodeJs, value: "75%", label: "DB & Data", color: "text-purple-400" }
   ];
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const Hero = ({ onNavigate }) => {
         }}></div>
       </div>
 
-      {/* Complex Floating Elements with 3D Movement */}
+      {/* Complex Floating Elements with 3D Movement - Hidden on mobile */}
       <motion.div
         animate={{ 
           y: [0, -30, 0], 
@@ -47,7 +47,7 @@ const Hero = ({ onNavigate }) => {
           scale: [1, 1.1, 1]
         }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-20 right-20 w-40 h-40 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-2xl"
+        className="absolute top-20 right-20 w-40 h-40 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-2xl hidden lg:block"
         style={{
           transform: `translateZ(${mousePosition.x * 0.01}px)`
         }}
@@ -61,7 +61,7 @@ const Hero = ({ onNavigate }) => {
           scale: [1, 0.9, 1]
         }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute bottom-20 left-20 w-32 h-32 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-2xl"
+        className="absolute bottom-20 left-20 w-32 h-32 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-2xl hidden lg:block"
         style={{
           transform: `translateZ(${mousePosition.y * 0.01}px)`
         }}
@@ -75,7 +75,7 @@ const Hero = ({ onNavigate }) => {
           scale: [0.8, 1.2, 0.8]
         }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-        className="absolute top-1/2 right-1/3 w-24 h-24 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-xl"
+        className="absolute top-1/2 right-1/3 w-24 h-24 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-xl hidden lg:block"
         style={{
           transform: `translateZ(${(mousePosition.x + mousePosition.y) * 0.005}px)`
         }}
@@ -93,7 +93,7 @@ const Hero = ({ onNavigate }) => {
         }}></div>
       </div>
 
-      <div className="container mx-auto px-4 py-20 relative z-10">
+      <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-20 relative z-10">
         <div className="max-w-7xl mx-auto">
           
           {/* Complex Header Section with Layered Animations */}
@@ -101,14 +101,14 @@ const Hero = ({ onNavigate }) => {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="text-center mb-20"
+            className="text-center mb-12 sm:mb-16 lg:mb-20"
           >
             {/* Floating Badge with Complex Animation */}
             <motion.div
               initial={{ opacity: 0, scale: 0.5, rotate: -180 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 1.2, delay: 0.5, ease: "backOut" }}
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-gray-800/80 to-gray-700/80 border border-gray-600 rounded-full px-8 py-4 mb-8 backdrop-blur-xl shadow-2xl"
+              className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-gray-800/80 to-gray-700/80 border border-gray-600 rounded-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 mb-6 sm:mb-8 backdrop-blur-xl shadow-2xl"
               whileHover={{ 
                 scale: 1.05, 
                 rotate: [0, -2, 2, 0],
@@ -119,9 +119,9 @@ const Hero = ({ onNavigate }) => {
                 animate={{ rotate: [0, 360] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
               >
-                <FaCode className="text-green-400 text-xl" />
+                <FaCode className="text-green-400 text-lg sm:text-xl" />
               </motion.div>
-              <span className="text-gray-200 text-lg font-medium">Full Stack Developer</span>
+              <span className="text-gray-200 text-sm sm:text-base lg:text-lg font-medium">Full Stack Developer</span>
             </motion.div>
             
             {/* Main Title with Staggered Animation */}
@@ -129,13 +129,13 @@ const Hero = ({ onNavigate }) => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.8 }}
-              className="mb-8"
+              className="mb-6 sm:mb-8"
             >
               <motion.h1
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1.2, delay: 1, ease: "backOut" }}
-                className="text-6xl md:text-8xl font-black mb-6 leading-tight"
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black mb-4 sm:mb-6 leading-tight"
               >
                 <motion.span
                   initial={{ opacity: 0, x: -100 }}
@@ -156,7 +156,7 @@ const Hero = ({ onNavigate }) => {
               transition={{ duration: 1, delay: 1.6 }}
               className="max-w-5xl mx-auto"
             >
-              <p className="text-2xl md:text-3xl text-gray-300 leading-relaxed mb-6">
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-300 leading-relaxed mb-4 sm:mb-6 px-2">
                 Especializado em{' '}
                 <TypeAnimation
                   sequence={[
@@ -181,26 +181,26 @@ const Hero = ({ onNavigate }) => {
                   repeat={Infinity}
                 />
               </p>
-              <p className="text-lg text-gray-400 leading-relaxed max-w-4xl mx-auto">
+              <p className="text-sm sm:text-base lg:text-lg text-gray-400 leading-relaxed max-w-4xl mx-auto px-2">
                 Desenvolvedor full stack com expertise em Python, Node.js, PostgreSQL, next.js, React...
-                <br />
+                <br className="hidden sm:block" />
                 Combino backend robusto com frontend elegante para criar experiências digitais excepcionais.
               </p>
             </motion.div>
           </motion.div>
 
-          {/* Advanced 3-Column Grid with Complex Animations */}
-          <div className="grid lg:grid-cols-3 gap-8 items-center">
+          {/* Advanced Grid - Responsive Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-center">
             
             {/* Left Column - Backend Expertise with Hover Effects */}
             <motion.div
               initial={{ opacity: 0, x: -100, rotateY: -15 }}
               animate={{ opacity: 1, x: 0, rotateY: 0 }}
               transition={{ duration: 1, delay: 2, ease: "easeOut" }}
-              className="lg:col-span-1"
+              className="lg:col-span-1 order-2 lg:order-1"
             >
               <motion.div 
-                className="bg-gradient-to-br from-gray-800/60 to-gray-700/40 border border-gray-600/50 rounded-3xl p-8 backdrop-blur-xl shadow-2xl h-full"
+                className="bg-gradient-to-br from-gray-800/60 to-gray-700/40 border border-gray-600/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl h-full"
                 whileHover={{ 
                   scale: 1.02, 
                   rotateY: 5,
@@ -211,19 +211,19 @@ const Hero = ({ onNavigate }) => {
                   perspective: "1000px"
                 }}
               >
-                <div className="text-center mb-8">
+                <div className="text-center mb-6 sm:mb-8">
                   <motion.div 
-                    className="w-20 h-20 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl"
+                    className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-2xl"
                     whileHover={{ rotate: 360 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <FaNodeJs className="text-white text-3xl" />
+                    <FaNodeJs className="text-white text-2xl sm:text-3xl" />
                   </motion.div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Backend & APIs</h3>
-                  <p className="text-gray-400 text-sm">Expertise Avançada</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Backend & APIs</h3>
+                  <p className="text-gray-400 text-xs sm:text-sm">Expertise Avançada</p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {[
                     { icon: FaNodeJs, label: "Node.js & Python", color: "green", level: "85%" },
                     { icon: FaJs, label: "JavaScript & TypeScript", color: "blue", level: "85%" },
@@ -234,15 +234,15 @@ const Hero = ({ onNavigate }) => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 2.2 + index * 0.1 }}
-                      className="bg-gray-700/40 rounded-xl p-4 border border-gray-600/30"
+                      className="bg-gray-700/40 rounded-xl p-3 sm:p-4 border border-gray-600/30"
                       whileHover={{ scale: 1.05, x: 5 }}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-3 h-3 bg-${tech.color}-500 rounded-full`}></div>
-                          <span className="text-sm font-medium text-white">{tech.label}</span>
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className={`w-2 h-2 sm:w-3 sm:h-3 bg-${tech.color}-500 rounded-full`}></div>
+                          <span className="text-xs sm:text-sm font-medium text-white">{tech.label}</span>
                         </div>
-                        <span className={`text-${tech.color}-400 font-bold text-sm`}>{tech.level}</span>
+                        <span className={`text-${tech.color}-400 font-bold text-xs sm:text-sm`}>{tech.level}</span>
                       </div>
                     </motion.div>
                   ))}
@@ -255,11 +255,11 @@ const Hero = ({ onNavigate }) => {
               initial={{ opacity: 0, y: 50, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 1, delay: 2.2, ease: "easeOut" }}
-              className="lg:col-span-1 text-center"
+              className="lg:col-span-1 order-1 lg:order-2 text-center"
             >
               {/* Animated Stats Grid */}
               <motion.div 
-                className="grid grid-cols-3 gap-4 mb-10"
+                className="grid grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10"
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 2.5 }}
@@ -276,7 +276,7 @@ const Hero = ({ onNavigate }) => {
                     className={`text-center ${index === currentStat ? 'scale-110' : 'scale-100'} transition-all duration-300`}
                   >
                     <motion.div 
-                      className={`text-3xl font-bold mb-2 ${stat.color}`}
+                      className={`text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 ${stat.color}`}
                       animate={{ 
                         scale: index === currentStat ? [1, 1.2, 1] : 1,
                         color: index === currentStat ? ["#10b981", "#3b82f6", "#8b5cf6"] : undefined
@@ -285,7 +285,7 @@ const Hero = ({ onNavigate }) => {
                     >
                       {stat.value}
                     </motion.div>
-                    <div className="text-sm text-gray-400">{stat.label}</div>
+                    <div className="text-xs sm:text-sm text-gray-400">{stat.label}</div>
                   </motion.div>
                 ))}
               </motion.div>
@@ -295,7 +295,7 @@ const Hero = ({ onNavigate }) => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 2.8 }}
-                className="space-y-6"
+                className="space-y-4 sm:space-y-6"
               >
                 <motion.div
                   whileHover={{ 
@@ -304,19 +304,19 @@ const Hero = ({ onNavigate }) => {
                   }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Link href="/projects" className="inline-block w-full bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-10 py-5 rounded-2xl font-bold text-xl hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 transition-all duration-500 transform hover:scale-105 shadow-2xl">
-                    <FaCode className="inline mr-3 text-2xl" />
+                  <Link href="/projects" className="inline-block w-full bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-6 sm:px-8 lg:px-10 py-4 sm:py-5 rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 transition-all duration-500 transform hover:scale-105 shadow-2xl">
+                    <FaCode className="inline mr-2 sm:mr-3 text-xl sm:text-2xl" />
                     Ver Projetos
                   </Link>
                 </motion.div>
                 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <motion.div
                     whileHover={{ scale: 1.05, y: -5 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex-1"
                   >
-                    <Link href="/experience" className="block w-full bg-gradient-to-r from-gray-700 to-gray-600 text-white px-6 py-4 rounded-xl font-medium hover:from-gray-600 hover:to-gray-500 transition-all duration-300 shadow-lg">
+                    <Link href="/experience" className="block w-full bg-gradient-to-r from-gray-700 to-gray-600 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl font-medium hover:from-gray-600 hover:to-gray-500 transition-all duration-300 shadow-lg">
                       <FaRocket className="inline mr-2" />
                       Experiência
                     </Link>
@@ -326,7 +326,7 @@ const Hero = ({ onNavigate }) => {
                     whileTap={{ scale: 0.95 }}
                     className="flex-1"
                   >
-                    <Link href="/skills" className="block w-full bg-gradient-to-r from-gray-700 to-gray-600 text-white px-6 py-4 rounded-xl font-medium hover:from-gray-600 hover:to-gray-500 transition-all duration-300 shadow-lg">
+                    <Link href="/skills" className="block w-full bg-gradient-to-r from-gray-700 to-gray-600 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl font-medium hover:from-gray-600 hover:to-gray-500 transition-all duration-300 shadow-lg">
                       <FaLaptopCode className="inline mr-2" />
                       Skills
                     </Link>
@@ -339,7 +339,7 @@ const Hero = ({ onNavigate }) => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 3.2 }}
-                className="flex justify-center gap-4 mt-8"
+                className="flex justify-center gap-3 sm:gap-4 mt-6 sm:mt-8"
               >
                 {[
                   { href: "https://github.com/MatheusRenzo", icon: FaGithub, color: "hover:text-white hover:border-blue-400" },
@@ -358,9 +358,9 @@ const Hero = ({ onNavigate }) => {
                       transition: { duration: 0.3 }
                     }}
                     whileTap={{ scale: 0.9 }}
-                    className={`p-4 bg-gray-800/80 border border-gray-600 rounded-2xl text-gray-300 transition-all duration-300 shadow-lg backdrop-blur-sm ${social.color}`}
+                    className={`p-3 sm:p-4 bg-gray-800/80 border border-gray-600 rounded-xl sm:rounded-2xl text-gray-300 transition-all duration-300 shadow-lg backdrop-blur-sm ${social.color}`}
                   >
-                    <social.icon className="text-xl" />
+                    <social.icon className="text-lg sm:text-xl" />
                   </motion.a>
                 ))}
               </motion.div>
@@ -371,10 +371,10 @@ const Hero = ({ onNavigate }) => {
               initial={{ opacity: 0, x: 100, rotateY: 15 }}
               animate={{ opacity: 1, x: 0, rotateY: 0 }}
               transition={{ duration: 1, delay: 2.4, ease: "easeOut" }}
-              className="lg:col-span-1"
+              className="lg:col-span-1 order-3"
             >
               <motion.div 
-                className="bg-gradient-to-br from-gray-800/60 to-gray-700/40 border border-gray-600/50 rounded-3xl p-8 backdrop-blur-xl shadow-2xl h-full"
+                className="bg-gradient-to-br from-gray-800/60 to-gray-700/40 border border-gray-600/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl h-full"
                 whileHover={{ 
                   scale: 1.02, 
                   rotateY: -5,
@@ -385,19 +385,19 @@ const Hero = ({ onNavigate }) => {
                   perspective: "1000px"
                 }}
               >
-                <div className="text-center mb-8">
+                <div className="text-center mb-6 sm:mb-8">
                   <motion.div 
-                    className="w-20 h-20 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl"
+                    className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-2xl"
                     whileHover={{ rotate: -360 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <FaReact className="text-white text-3xl" />
+                    <FaReact className="text-white text-2xl sm:text-3xl" />
                   </motion.div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Frontend & UI/UX</h3>
-                  <p className="text-gray-400 text-sm">Desenvolvimento Moderno</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Frontend & UI/UX</h3>
+                  <p className="text-gray-400 text-xs sm:text-sm">Desenvolvimento Moderno</p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {[
                     { icon: FaReact, label: "React & Next.js", color: "purple", level: "85%" },
                     { icon: FaJs, label: "JavaScript & TypeScript", color: "blue", level: "85%" },
@@ -408,35 +408,19 @@ const Hero = ({ onNavigate }) => {
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 2.6 + index * 0.1 }}
-                      className="bg-gray-700/40 rounded-xl p-4 border border-gray-600/30"
+                      className="bg-gray-700/40 rounded-xl p-3 sm:p-4 border border-gray-600/30"
                       whileHover={{ scale: 1.05, x: -5 }}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-3 h-3 bg-${tech.color}-500 rounded-full`}></div>
-                          <span className="text-sm font-medium text-white">{tech.label}</span>
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className={`w-2 h-2 sm:w-3 sm:h-3 bg-${tech.color}-500 rounded-full`}></div>
+                          <span className="text-xs sm:text-sm font-medium text-white">{tech.label}</span>
                         </div>
-                        <span className={`text-${tech.color}-400 font-bold text-sm`}>{tech.level}</span>
+                        <span className={`text-${tech.color}-400 font-bold text-xs sm:text-sm`}>{tech.level}</span>
                       </div>
                     </motion.div>
                   ))}
                 </div>
-
-                {/* Full Stack Badge */}
-                <motion.div 
-                  className="mt-6 pt-6 border-t border-gray-600/30 text-center"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 3 }}
-                >
-                  <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-700/30 rounded-2xl p-4">
-                    <h4 className="text-lg font-bold text-blue-300 mb-2">🎯 Full Stack Developer</h4>
-                    <p className="text-xs text-blue-200">
-                      <strong>JavaScript + Node.js + React</strong><br/>
-                      Soluções completas e escaláveis
-                    </p>
-                  </div>
-                </motion.div>
               </motion.div>
             </motion.div>
 
@@ -449,7 +433,7 @@ const Hero = ({ onNavigate }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 3.5 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2"
       >
         <motion.div
           animate={{ 
@@ -460,7 +444,7 @@ const Hero = ({ onNavigate }) => {
           className="text-gray-400 cursor-pointer"
           whileHover={{ scale: 1.2 }}
         >
-          <FaChevronDown className="text-2xl" />
+          <FaChevronDown className="text-xl sm:text-2xl" />
         </motion.div>
       </motion.div>
     </section>

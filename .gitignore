@@ -141,3 +141,4 @@ temp/
 deploy-auto.sh
 deploy-auto.bat
 deploy-auto.ps1
+deploy_config.json

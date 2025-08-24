@@ -94,6 +94,11 @@ const Projects = () => {
 
   // Função para determinar categoria baseada no nome e descrição
   const getCategory = (repo) => {
+    // Se já tem categoria definida na API, usa ela
+    if (repo.category) {
+      return repo.category;
+    }
+    
     const name = repo.name.toLowerCase();
     const description = (repo.description || '').toLowerCase();
     
@@ -129,12 +134,26 @@ const Projects = () => {
       techs.push('HTML', 'CSS', 'Web');
     }
     
-    // Adiciona tecnologias baseadas nos topics
-    if (repo.topics) {
+    // Adiciona tecnologias baseadas nos topics da API
+    if (repo.topics && repo.topics.length > 0) {
       techs.push(...repo.topics.slice(0, 3));
     }
     
     return techs.slice(0, 5); // Limita a 5 tecnologias
+  };
+
+  // Função para formatar o título do projeto
+  const formatProjectTitle = (name) => {
+    // Remove hífens e underscores, capitaliza palavras
+    return name
+      .replace(/[-_]/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase())
+      .trim();
+  };
+
+  // Função para verificar se o projeto tem homepage
+  const hasHomepage = (repo) => {
+    return repo.homepage && repo.homepage.trim() !== '';
   };
 
   // Busca repositórios do GitHub
@@ -173,7 +192,7 @@ const Projects = () => {
         
         // Converte repositórios para o formato dos projetos
         const formattedRepos = reposData.map(repo => ({
-          title: repo.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          title: formatProjectTitle(repo.name),
           description: repo.description || 'Projeto desenvolvido com foco em automação e eficiência.',
           technologies: getTechnologies(repo),
           github: repo.html_url,
@@ -181,9 +200,16 @@ const Projects = () => {
           stars: repo.stargazers_count > 0 ? `⭐ ${repo.stargazers_count}` : '⭐',
           language: repo.language || 'Outros',
           updated: repo.updated_at,
+          created: repo.created_at,
           forks: repo.forks_count,
           size: repo.size,
-          featured: false
+          featured: repo.featured || false,
+          homepage: hasHomepage(repo) ? repo.homepage : null,
+          archived: repo.archived,
+          disabled: repo.disabled,
+          openIssues: repo.open_issues_count,
+          defaultBranch: repo.default_branch,
+          topics: repo.topics || []
         }));
         
         setRepos(formattedRepos);
@@ -288,13 +314,13 @@ const Projects = () => {
         >
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Projetos</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Uma seleção dos meus projetos mais relevantes, focados em automação VTEX, 
-            ferramentas e-commerce e análise de performance web. Cada projeto demonstra 
-            minha expertise em Python, APIs e soluções escaláveis.
+            Uma seleção dos meus projetos mais relevantes, incluindo portfólios, 
+            automação VTEX, ferramentas e-commerce e análise de performance web. 
+            Cada projeto demonstra minha expertise em Python, JavaScript, APIs e soluções escaláveis.
           </p>
         </motion.div>
 
-        {/* Status de Conexão com GitHub */}
+        {/* Status dos Projetos */}
         <motion.div 
           className="flex justify-center mb-6"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -305,15 +331,9 @@ const Projects = () => {
             <div className="flex items-center gap-3">
               {/* Indicador de Status */}
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${
-                  connectionStatus === 'connected' ? 'bg-green-500 animate-pulse' :
-                  connectionStatus === 'connecting' ? 'bg-yellow-500 animate-spin' :
-                  'bg-red-500'
-                }`}></div>
+                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
                 <span className="text-sm font-medium text-gray-700">
-                  {connectionStatus === 'connected' ? 'Conectado ao GitHub' :
-                   connectionStatus === 'connecting' ? 'Conectando...' :
-                   'Erro na conexão'}
+                  Projetos da API carregados
                 </span>
               </div>
               
@@ -367,7 +387,7 @@ const Projects = () => {
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               ></motion.div>
-              <p className="mt-2 text-gray-600">Carregando projetos do GitHub...</p>
+              <p className="mt-2 text-gray-600">Carregando projetos da API...</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -433,6 +453,53 @@ const Projects = () => {
                       <span className="text-gray-400">•</span>
                       <span className="text-gray-500">{project.category}</span>
                     </div>
+                    
+                    {/* Informações adicionais do repositório */}
+                    <div className="flex flex-wrap gap-3 mt-3 text-xs text-gray-500">
+                      {/* Size */}
+                      <div className="flex items-center gap-1">
+                        <span>📁</span>
+                        <span>{project.size} KB</span>
+                      </div>
+                      
+                      {/* Forks */}
+                      {project.forks > 0 && (
+                        <div className="flex items-center gap-1">
+                          <span>🔀</span>
+                          <span>{project.forks}</span>
+                        </div>
+                      )}
+                      
+                      {/* Open Issues */}
+                      {project.openIssues > 0 && (
+                        <div className="flex items-center gap-1">
+                          <span>🐛</span>
+                          <span>{project.openIssues}</span>
+                        </div>
+                      )}
+                      
+                      {/* Branch */}
+                      <div className="flex items-center gap-1">
+                        <span>🌿</span>
+                        <span>{project.defaultBranch}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Status do repositório */}
+                    {(project.archived || project.disabled) && (
+                      <div className="flex gap-2 mt-2">
+                        {project.archived && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            📦 Arquivado
+                          </span>
+                        )}
+                        {project.disabled && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            ⚠️ Desabilitado
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Descrição */}
@@ -461,6 +528,61 @@ const Projects = () => {
                       )}
                     </div>
 
+                    {/* Topics do GitHub (se disponíveis) */}
+                    {project.topics && project.topics.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-xs text-gray-500 mb-2">🏷️ Topics:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {project.topics.slice(0, 6).map((topic, topicIndex) => (
+                            <motion.span 
+                              key={topicIndex} 
+                              className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs"
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: 0.7 + topicIndex * 0.1 }}
+                            >
+                              {topic}
+                            </motion.span>
+                          ))}
+                          {project.topics.length > 6 && (
+                            <span className="bg-gray-100 text-gray-500 px-2 py-1 rounded text-xs">
+                              +{project.topics.length - 6}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Informações de data */}
+                    <div className="mb-4 text-xs text-gray-500">
+                      <div className="flex flex-wrap gap-4">
+                        <div className="flex items-center gap-1">
+                          <span>📅</span>
+                          <span>Criado: {new Date(project.created).toLocaleDateString('pt-BR')}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>🔄</span>
+                          <span>Atualizado: {new Date(project.updated).toLocaleDateString('pt-BR')}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  {/* Links do Projeto */}
+                  <div className="flex flex-col gap-2">
+                    {/* Link Homepage se disponível */}
+                    {project.homepage && (
+                      <motion.a 
+                        href={project.homepage} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-green-600 hover:text-green-700 text-sm font-medium transition-colors"
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        🌐 Ver projeto →
+                      </motion.a>
+                    )}
+                    
                     {/* Link GitHub */}
                     <motion.a 
                       href={project.github} 
@@ -470,8 +592,9 @@ const Projects = () => {
                       whileHover={{ x: 5 }}
                       transition={{ duration: 0.2 }}
                     >
-                      Ver no GitHub →
+                      📁 Ver no GitHub →
                     </motion.a>
+                  </div>
                   </div>
                 </motion.div>
               ))}
@@ -508,6 +631,53 @@ const Projects = () => {
                     <span className="text-gray-400">•</span>
                     <span className="text-gray-500">{project.category}</span>
                   </div>
+                  
+                  {/* Informações adicionais do repositório */}
+                  <div className="flex flex-wrap gap-3 mt-3 text-xs text-gray-500">
+                    {/* Size */}
+                    <div className="flex items-center gap-1">
+                      <span>📁</span>
+                      <span>{project.size} KB</span>
+                    </div>
+                    
+                    {/* Forks */}
+                    {project.forks > 0 && (
+                      <div className="flex items-center gap-1">
+                        <span>🔀</span>
+                        <span>{project.forks}</span>
+                      </div>
+                    )}
+                    
+                    {/* Open Issues */}
+                    {project.openIssues > 0 && (
+                      <div className="flex items-center gap-1">
+                        <span>🐛</span>
+                        <span>{project.openIssues}</span>
+                      </div>
+                    )}
+                    
+                    {/* Branch */}
+                    <div className="flex items-center gap-1">
+                      <span>🌿</span>
+                      <span>{project.defaultBranch}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Status do repositório */}
+                  {(project.archived || project.disabled) && (
+                    <div className="flex gap-2 mt-2">
+                      {project.archived && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          📦 Arquivado
+                        </span>
+                      )}
+                      {project.disabled && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          ⚠️ Desabilitado
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Descrição */}
@@ -536,17 +706,59 @@ const Projects = () => {
                     )}
                   </div>
 
-                  {/* Link GitHub */}
-                  <motion.a 
-                    href={project.github} 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    Ver no GitHub →
-                  </motion.a>
+                  {/* Topics do GitHub (se disponíveis) */}
+                  {project.topics && project.topics.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-xs text-gray-500 mb-2">🏷️ Topics:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {project.topics.slice(0, 6).map((topic, topicIndex) => (
+                          <motion.span 
+                            key={topicIndex} 
+                            className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.4 + topicIndex * 0.1 }}
+                          >
+                            {topic}
+                          </motion.span>
+                        ))}
+                        {project.topics.length > 6 && (
+                          <span className="bg-gray-100 text-gray-500 px-2 py-1 rounded text-xs">
+                            +{project.topics.length - 6}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Links do Projeto */}
+                  <div className="flex flex-col gap-2">
+                    {/* Link Homepage se disponível */}
+                    {project.homepage && (
+                      <motion.a 
+                        href={project.homepage} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-green-600 hover:text-green-700 text-sm font-medium transition-colors"
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        🌐 Ver projeto →
+                      </motion.a>
+                    )}
+                    
+                    {/* Link GitHub */}
+                    <motion.a 
+                      href={project.github} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      📁 Ver no GitHub →
+                    </motion.a>
+                  </div>
                 </div>
               </motion.div>
             ))}

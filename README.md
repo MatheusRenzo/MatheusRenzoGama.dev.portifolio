@@ -10,14 +10,14 @@
 [![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)](https://eslint.org/)
 [![PostCSS](https://img.shields.io/badge/PostCSS-DD3A0A?style=for-the-badge&logo=postcss&logoColor=white)](https://postcss.org/)
 
-[![GitHub stars](https://img.shields.io/github/stars/MatheusRenzo/matheusgama-dev-portfolio?style=social)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio)
-[![GitHub forks](https://img.shields.io/github/forks/MatheusRenzo/matheusgama-dev-portfolio?style=social)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio)
-[![GitHub issues](https://img.shields.io/github/issues/MatheusRenzo/matheusgama-dev-portfolio)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/MatheusRenzo/matheusgama-dev-portfolio)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio/pulls)
-[![GitHub last commit](https://img.shields.io/github/last-commit/MatheusRenzo/matheusgama-dev-portfolio)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/MatheusRenzo/matheusgama-dev-portfolio)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio)
-[![GitHub contributors](https://img.shields.io/github/contributors/MatheusRenzo/matheusgama-dev-portfolio)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio)
-[![GitHub repo size](https://img.shields.io/github/repo-size/MatheusRenzo/matheusgama-dev-portfolio)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio)
+[![GitHub stars](https://img.shields.io/github/stars/MatheusRenzo/MatheusRenzoGama.dev.portifolio?style=social)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio)
+[![GitHub forks](https://img.shields.io/github/forks/MatheusRenzo/MatheusRenzoGama.dev.portifolio?style=social)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio)
+[![GitHub issues](https://img.shields.io/github/issues/MatheusRenzo/MatheusRenzoGama.dev.portifolio)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/MatheusRenzo/MatheusRenzoGama.dev.portifolio)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio/pulls)
+[![GitHub last commit](https://img.shields.io/github/last-commit/MatheusRenzo/MatheusRenzoGama.dev.portifolio)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/MatheusRenzo/MatheusRenzoGama.dev.portifolio)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio)
+[![GitHub contributors](https://img.shields.io/github/contributors/MatheusRenzo/MatheusRenzoGama.dev.portifolio)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio)
+[![GitHub repo size](https://img.shields.io/github/repo-size/MatheusRenzo/MatheusRenzoGama.dev.portifolio)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio)
 
 ## 📊 **Gráficos e Estatísticas Visuais**
 
@@ -27,7 +27,7 @@
 ![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=MatheusRenzo&layout=compact&theme=dark)
 
 ### 📈 **Repository Statistics**
-![Repository Stats](https://github-readme-stats.vercel.app/api/pin/?username=MatheusRenzo&repo=matheusgama-dev-portfolio&theme=dark)
+![Repository Stats](https://github-readme-stats.vercel.app/api/pin/?username=MatheusRenzo&repo=MatheusRenzoGama.dev.portifolio&theme=dark)
 ![GitHub Profile Views](https://komarev.com/ghpvc/?username=MatheusRenzo&color=blue&style=flat-square)
 
 ### 🚀 **Performance & Analytics**
@@ -191,10 +191,10 @@ portfolio-matheus-renzo/
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/MatheusRenzo/matheusgama-dev-portfolio.git
+git clone https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio.git
 
 # 2. Entre no diretório
-cd matheusgama-dev-portfolio
+cd MatheusRenzoGama.dev.portifolio
 
 # 3. Instale as dependências
 npm install

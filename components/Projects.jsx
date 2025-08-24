@@ -256,9 +256,70 @@ const Projects = () => {
     ? repos 
     : repos.filter(project => project.category === selectedCategory);
 
-  // Separa projetos em destaque e regulares
-  const featuredProjects = filteredProjects.filter(p => p.featured);
-  const regularProjects = filteredProjects.filter(p => !p.featured);
+  // Função para calcular pontuação de relevância do projeto
+  const calculateProjectScore = (project) => {
+    let score = 0;
+    
+    // Projetos em destaque têm prioridade máxima
+    if (project.featured) score += 1000;
+    
+    // Pontuação por estrelas
+    const stars = parseInt(project.stars.replace(/[^0-9]/g, '')) || 0;
+    score += stars * 100;
+    
+    // Pontuação por data de criação (projetos mais novos ganham pontos)
+    if (project.created) {
+      const daysSinceCreation = (new Date() - new Date(project.created)) / (1000 * 60 * 60 * 24);
+      score += Math.max(0, 365 - daysSinceCreation);
+    }
+    
+    // Pontuação por atualização recente
+    if (project.updated) {
+      const daysSinceUpdate = (new Date() - new Date(project.updated)) / (1000 * 60 * 60 * 24);
+      score += Math.max(0, 365 - daysSinceUpdate);
+    }
+    
+    // Pontuação por homepage
+    if (project.homepage) score += 50;
+    
+    // Pontuação por tamanho
+    if (project.size) {
+      score += Math.min(project.size / 10, 100);
+    }
+    
+    // Pontuação por linguagem
+    if (project.language === 'Python') score += 30;
+    else if (project.language === 'JavaScript') score += 25;
+    else if (project.language === 'TypeScript') score += 25;
+    
+    // Pontuação por categoria
+    if (project.category === 'VTEX & E-commerce') score += 40;
+    else if (project.category === 'Portfólio & Web') score += 35;
+    else if (project.category === 'Performance & Analytics') score += 30;
+    
+    return Math.round(score); // Arredonda para números inteiros
+  };
+
+  // Ordena projetos por relevância
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
+    const scoreA = calculateProjectScore(a);
+    const scoreB = calculateProjectScore(b);
+    
+    if (scoreA !== scoreB) {
+      return scoreB - scoreA;
+    }
+    
+    // Em caso de empate, ordena por data de atualização
+    if (a.updated && b.updated) {
+      return new Date(b.updated) - new Date(a.updated);
+    }
+    
+    return 0;
+  });
+
+  // Separa projetos em destaque e regulares (já ordenados)
+  const featuredProjects = sortedProjects.filter(p => p.featured);
+  const regularProjects = sortedProjects.filter(p => !p.featured);
 
   // Animações
   const containerVariants = {
@@ -429,23 +490,25 @@ const Projects = () => {
                   variants={cardVariants}
                   whileHover="hover"
                 >
-                  {/* Badge de Destaque */}
-                  <motion.div 
-                    className="absolute top-3 right-3 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                  >
-                    Destaque
-                  </motion.div>
+                  {/* Badge de Destaque e Estrelas */}
+                  <div className="absolute top-3 right-3 flex items-center gap-2">
+                    <motion.div 
+                      className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.5 + index * 0.1 }}
+                    >
+                      Destaque
+                    </motion.div>
+                    <span className="text-xs text-gray-500">{project.stars}</span>
+                  </div>
                   
                   {/* Header do Card */}
-                  <div className="p-4 border-b border-gray-100">
+                  <div className="p-4 border-b border-gray-100 pt-8">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-semibold text-gray-800 text-sm leading-tight">
                         {project.title}
                       </h3>
-                      <span className="text-xs text-gray-500">{project.stars}</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs">
                       <span className="w-3 h-3 rounded-full bg-blue-500"></span>
@@ -623,7 +686,7 @@ const Projects = () => {
                     <h3 className="font-semibold text-gray-800 text-sm leading-tight">
                       {project.title}
                     </h3>
-                    <span className="text-xs text-gray-500">{project.stars}</span>
+                    <span className="text-xs text-gray-500 ml-2">{project.stars}</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs">
                     <span className="w-3 h-3 rounded-full bg-blue-500"></span>

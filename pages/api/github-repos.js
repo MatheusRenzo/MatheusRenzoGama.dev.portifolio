@@ -42,17 +42,17 @@ export default async function handler(req, res) {
       },
       {
         id: 2,
-        name: "matheusgama-dev-portfolio",
-        full_name: "MatheusRenzo/matheusgama-dev-portfolio",
+        name: "MatheusRenzoGama.dev.portifolio",
+        full_name: "MatheusRenzo/MatheusRenzoGama.dev.portifolio",
         description: "Portfólio online de Matheus Gama. Um espaço criado para reunir projetos, ideias e experiências desenvolvidas ao longo da trajetória como profissional de tecnologia. Este repositório serve como vitrine organizada, permitindo acompanhar de forma clara e objetiva a evolução e o estilo de trabalho.",
-        html_url: "https://github.com/MatheusRenzo/matheusgama-dev-portfolio",
+        html_url: "https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio",
         language: "JavaScript",
         stargazers_count: 0,
         forks_count: 0,
         updated_at: "2025-08-24T15:36:22Z",
         created_at: "2025-08-24T02:39:01Z",
         topics: [],
-        homepage: "https://matheusgama-dev-portfolio.vercel.app",
+        homepage: "https://matheus-renzo-gama-dev-portifolio.vercel.app",
         size: 187,
         open_issues_count: 0,
         default_branch: "main",
@@ -213,13 +213,55 @@ export default async function handler(req, res) {
         featured: repo.featured
       }))
       .sort((a, b) => {
-        // Prioriza por: featured, stars, atualização recente
-        if (a.featured !== b.featured) {
-          return b.featured - a.featured;
+        // Sistema de pontuação para ordenação inteligente
+        const getScore = (repo) => {
+          let score = 0;
+          
+          // Projetos em destaque têm prioridade máxima
+          if (repo.featured) score += 1000;
+          
+          // Pontuação por estrelas (cada estrela = 100 pontos)
+          score += repo.stargazers_count * 100;
+          
+          // Pontuação por forks (cada fork = 50 pontos)
+          score += repo.forks_count * 50;
+          
+          // Pontuação por data de criação (projetos mais novos ganham pontos)
+          const daysSinceCreation = (new Date() - new Date(repo.created_at)) / (1000 * 60 * 60 * 24);
+          score += Math.max(0, 365 - daysSinceCreation); // Máximo 365 pontos para projetos criados hoje
+          
+          // Pontuação por atualização recente (mais recente = mais pontos)
+          const daysSinceUpdate = (new Date() - new Date(repo.updated_at)) / (1000 * 60 * 60 * 24);
+          score += Math.max(0, 365 - daysSinceUpdate); // Máximo 365 pontos para projetos atualizados hoje
+          
+          // Pontuação por homepage (projetos com demo ganham pontos)
+          if (repo.homepage) score += 50;
+          
+          // Pontuação por tamanho (projetos maiores podem indicar mais complexidade)
+          score += Math.min(repo.size / 10, 100); // Máximo 100 pontos para projetos muito grandes
+          
+          // Pontuação por linguagem (prioriza tecnologias principais)
+          if (repo.language === 'Python') score += 30;
+          else if (repo.language === 'JavaScript') score += 25;
+          else if (repo.language === 'TypeScript') score += 25;
+          
+          // Pontuação por categoria (prioriza categorias principais)
+          if (repo.category === 'VTEX & E-commerce') score += 40;
+          else if (repo.category === 'Portfólio & Web') score += 35;
+          else if (repo.category === 'Performance & Analytics') score += 30;
+          
+          return Math.round(score); // Arredonda para números inteiros
+        };
+        
+        const scoreA = getScore(a);
+        const scoreB = getScore(b);
+        
+        // Ordena por pontuação (maior primeiro)
+        if (scoreA !== scoreB) {
+          return scoreB - scoreA;
         }
-        if (a.stargazers_count !== b.stargazers_count) {
-          return b.stargazers_count - a.stargazers_count;
-        }
+        
+        // Em caso de empate, ordena por data de atualização (mais recente primeiro)
         return new Date(b.updated_at) - new Date(a.updated_at);
       });
 

@@ -181,7 +181,7 @@ NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
 2. **Configurar Variáveis**: Configure as variáveis de ambiente
 3. **Deploy Automático**: Deploy automático a cada push
 4. **Custom Domain**: Configure domínio personalizado
-```
+
 
 ### 🌐 Outras Plataformas
 
@@ -214,7 +214,7 @@ Contribuições são sempre bem-vindas! 🎉
 
 Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-```
+
 MIT License
 
 Copyright (c) 2024 Matheus Renzo Gama
@@ -236,7 +236,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-```
+
 
 ## 📞 Contato
 

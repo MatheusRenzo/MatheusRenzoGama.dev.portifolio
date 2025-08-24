@@ -7,10 +7,10 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 [![Deploy](https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/)
 
-[![GitHub stars](https://img.shields.io/github/stars/MatheusRenzo/portfolio-matheus-renzo?style=social)](https://github.com/MatheusRenzo/portfolio-matheus-renzo)
-[![GitHub forks](https://img.shields.io/github/forks/MatheusRenzo/portfolio-matheus-renzo?style=social)](https://github.com/MatheusRenzo/portfolio-matheus-renzo)
-[![GitHub issues](https://img.shields.io/github/issues/MatheusRenzo/portfolio-matheus-renzo)](https://github.com/MatheusRenzo/portfolio-matheus-renzo/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/MatheusRenzo/portfolio-matheus-renzo)](https://github.com/MatheusRenzo/portfolio-matheus-renzo/pulls)
+[![GitHub stars](https://img.shields.io/github/stars/MatheusRenzo/matheusgama-dev-portfolio?style=social)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio)
+[![GitHub forks](https://img.shields.io/github/forks/MatheusRenzo/matheusgama-dev-portfolio?style=social)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio)
+[![GitHub issues](https://img.shields.io/github/issues/MatheusRenzo/matheusgama-dev-portfolio)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/MatheusRenzo/matheusgama-dev-portfolio)](https://github.com/MatheusRenzo/matheusgama-dev-portfolio/pulls)
 
 ## 📋 Índice
 
@@ -101,7 +101,8 @@ portfolio-matheus-renzo/
 │   ├── 💼 projects.js     # Página de projetos
 │   └── 🛠️ skills.js       # Página de habilidades
 ├── 📁 lib/                 # Configurações e utilitários
-│   └── 📧 emailjs-config.js # Configuração EmailJS
+│   ├── 📧 emailjs-config.js # Configuração EmailJS
+│   └── 📊 speed-insights-config.js # Configuração Vercel Speed Insights
 ├── 📁 styles/              # Estilos globais e CSS
 ├── 📁 public/              # Arquivos estáticos (imagens, favicon)
 ├── 📁 .next/               # Build do Next.js (não versionado)
@@ -125,10 +126,10 @@ portfolio-matheus-renzo/
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/MatheusRenzo/portfolio-matheus-renzo.git
+git clone https://github.com/MatheusRenzo/matheusgama-dev-portfolio.git
 
 # 2. Entre no diretório
-cd portfolio-matheus-renzo
+cd matheusgama-dev-portfolio
 
 # 3. Instale as dependências
 npm install
@@ -304,7 +305,7 @@ Contribuições são sempre bem-vindas! 🎉
 ### 🔄 Como Contribuir
 
 1. **Fork** o projeto
-2. **Clone** seu fork: `git clone https://github.com/seu-usuario/portfolio-matheus-renzo.git`
+2. **Clone** seu fork: `git clone https://github.com/seu-usuario/matheusgama-dev-portfolio.git`
 3. **Crie** uma branch: `git checkout -b feature/NovaFuncionalidade`
 4. **Commit** suas mudanças: `git commit -m 'Adiciona nova funcionalidade'`
 5. **Push** para a branch: `git push origin feature/NovaFuncionalidade`
@@ -363,10 +364,10 @@ SOFTWARE.
 
 ## 📊 Estatísticas do Projeto
 
-![GitHub last commit](https://img.shields.io/github/last-commit/MatheusRenzo/portfolio-matheus-renzo)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/MatheusRenzo/portfolio-matheus-renzo)
-![GitHub contributors](https://img.shields.io/github/contributors/MatheusRenzo/portfolio-matheus-renzo)
-![GitHub repo size](https://img.shields.io/github/repo-size/MatheusRenzo/portfolio-matheus-renzo)
+![GitHub last commit](https://img.shields.io/github/last-commit/MatheusRenzo/matheusgama-dev-portfolio)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/MatheusRenzo/matheusgama-dev-portfolio)
+![GitHub contributors](https://img.shields.io/github/contributors/MatheusRenzo/matheusgama-dev-portfolio)
+![GitHub repo size](https://img.shields.io/github/repo-size/MatheusRenzo/matheusgama-dev-portfolio)
 
 ---
 

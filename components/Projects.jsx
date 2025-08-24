@@ -147,7 +147,13 @@ const Projects = () => {
         const response = await fetch('/api/github-repos');
         
         if (!response.ok) {
-          throw new Error('Failed to fetch repos');
+          // Trata diferentes tipos de erro
+          if (response.status === 429) {
+            // Rate limit atingido
+            const errorData = await response.json();
+            throw new Error(`Rate limit excedido: ${errorData.suggestion}`);
+          }
+          throw new Error(`Erro ${response.status}: Failed to fetch repos`);
         }
         
         const data = await response.json();
@@ -155,6 +161,11 @@ const Projects = () => {
         // Verifica se a API retornou dados válidos
         if (data.api_status === 'error') {
           throw new Error(data.message || 'Erro na API');
+        }
+        
+        // Verifica se é rate limit
+        if (data.api_status === 'rate_limited') {
+          throw new Error(`Rate limit excedido: ${data.suggestion}`);
         }
         
         // Extrai repositórios da resposta
@@ -179,9 +190,27 @@ const Projects = () => {
         setError(null);
         setConnectionStatus('connected');
         setLastUpdated(new Date().toLocaleString('pt-BR'));
+        
+        // Log de informações sobre rate limits
+        if (data.rate_limit_info) {
+          console.log('GitHub API Rate Limit Info:', data.rate_limit_info);
+          console.log('Token configurado:', data.has_token);
+        }
       } catch (err) {
         console.error('Error fetching repos:', err);
-        setError('Erro ao carregar repositórios do GitHub');
+        
+        // Mensagens de erro mais específicas
+        let errorMessage = 'Erro ao carregar repositórios do GitHub';
+        
+        if (err.message.includes('Rate limit')) {
+          errorMessage = err.message;
+        } else if (err.message.includes('403')) {
+          errorMessage = 'Acesso negado à API do GitHub. Verifique as configurações.';
+        } else if (err.message.includes('404')) {
+          errorMessage = 'Usuário ou repositórios não encontrados.';
+        }
+        
+        setError(errorMessage);
         setConnectionStatus('error');
         // Usa projetos estáticos como fallback
         setRepos(fallbackProjects);

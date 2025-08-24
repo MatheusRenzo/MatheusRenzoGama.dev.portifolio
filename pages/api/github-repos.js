@@ -1,22 +1,47 @@
+import { githubConfig } from '../../lib/github-config';
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
+  // Logs de debug para verificar a configuração
+  console.log('🔍 Debug GitHub Config:');
+  console.log('- Token configurado:', githubConfig.hasToken());
+  console.log('- Token length:', githubConfig.token ? githubConfig.token.length : 0);
+  console.log('- Token start:', githubConfig.token ? githubConfig.token.substring(0, 10) + '...' : 'N/A');
+  console.log('- Headers:', githubConfig.getHeaders());
+  console.log('- Rate limit info:', githubConfig.getRateLimitInfo());
+
+  // Cache mais agressivo para evitar rate limits
+  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=1800, max-age=1800');
+
   try {
-    const username = 'MatheusRenzo';
+    const username = githubConfig.username;
     
     // Busca repositórios com mais detalhes
     const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=15&type=owner`, {
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'portfolio-matheus-renzo'
-      }
+      headers: githubConfig.getHeaders()
     });
     
     if (!response.ok) {
       if (response.status === 403) {
-        throw new Error('Rate limit exceeded. Please try again later.');
+        // Rate limit atingido - retorna dados em cache se disponível
+        console.warn('GitHub API rate limit exceeded, using cached data if available');
+        
+        // Aqui você pode implementar um cache mais robusto (Redis, banco de dados, etc.)
+        // Por enquanto, retorna um erro mais específico
+        return res.status(429).json({
+          message: 'Rate limit exceeded. Please try again later.',
+          error: 'GitHub API rate limit exceeded',
+          api_status: 'rate_limited',
+          retry_after: '1 hour',
+          suggestion: githubConfig.hasToken() 
+            ? 'Token configurado, verifique se ainda é válido'
+            : 'Configure GITHUB_TOKEN para aumentar o limite de 60 para 5000 requisições/hora',
+          timestamp: new Date().toISOString(),
+          rate_limit_info: githubConfig.getRateLimitInfo()
+        });
       }
       throw new Error(`GitHub API error: ${response.status}`);
     }
@@ -60,11 +85,11 @@ export default async function handler(req, res) {
       total_count: formattedRepos.length,
       fetched_at: new Date().toISOString(),
       user: username,
-      api_status: 'success'
+      api_status: 'success',
+      rate_limit_info: githubConfig.getRateLimitInfo(),
+      has_token: githubConfig.hasToken()
     };
 
-    // Cache por 30 minutos (mais agressivo para evitar rate limits)
-    res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=300');
     res.status(200).json(responseData);
     
   } catch (error) {
@@ -76,7 +101,9 @@ export default async function handler(req, res) {
       error: error.message,
       api_status: 'error',
       timestamp: new Date().toISOString(),
-      suggestion: 'Verificando se o usuário existe e se os repositórios são públicos'
+      suggestion: 'Verificando se o usuário existe e se os repositórios são públicos',
+      rate_limit_info: githubConfig.getRateLimitInfo(),
+      has_token: githubConfig.hasToken()
     });
   }
 }

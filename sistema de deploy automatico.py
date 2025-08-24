@@ -204,113 +204,55 @@ class DeployGUI(QWidget):
         layout.setSpacing(15)
 
         # Cabeçalho
-        header = QLabel("⚙️ Configurações do Projeto")
+        header = QLabel("⚙️ Configuração Automática do Projeto")
         header.setStyleSheet("font-size: 24px; font-weight: bold; color: #8b5cf6; text-align: center;")
         layout.addWidget(header)
 
-        # Grupo de configurações do projeto
-        project_group = QGroupBox("📁 Informações do Projeto")
-        project_group.setStyleSheet("""
+        # Instruções
+        instructions = QLabel("📋 Cole os comandos Git do GitHub na área abaixo e clique em processar:")
+        instructions.setStyleSheet("color: #8b5cf6; font-size: 16px; text-align: center; margin-bottom: 20px;")
+        layout.addWidget(instructions)
+
+        # Área para colar comandos Git
+        git_commands_group = QGroupBox("📋 Comandos Git do GitHub")
+        git_commands_group.setStyleSheet("""
             QGroupBox {
                 font-weight: bold; color: #8b5cf6; border: 2px solid #8b5cf6;
                 border-radius: 8px; margin-top: 10px; padding-top: 10px;
             }
             QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px 0 5px; }
         """)
-        project_layout = QFormLayout()
+        git_commands_layout = QVBoxLayout()
         
-        self.project_name_input = QLineEdit()
-        self.project_name_input.setPlaceholderText("Ex: meu-projeto, portfolio, blog...")
-        self.project_name_input.setStyleSheet("""
-            background-color: #2d333b; color: #ffffff; padding: 8px;
-            border-radius: 5px; font-size: 14px;
+        self.git_commands_text = QTextEdit()
+        self.git_commands_text.setPlaceholderText("Cole aqui os comandos Git do GitHub, por exemplo:\n\necho \"# meu-projeto\" >> README.md\ngit init\ngit add README.md\ngit commit -m \"first commit\"\ngit branch -M main\ngit remote add origin git@github.com:usuario/repositorio.git\ngit push -u origin main")
+        self.git_commands_text.setMaximumHeight(150)
+        self.git_commands_text.setStyleSheet("""
+            background-color: #2d333b; color: #ffffff; padding: 12px;
+            border-radius: 8px; font-size: 14px; font-family: Consolas;
         """)
-        project_layout.addRow("Nome do Projeto:", self.project_name_input)
+        git_commands_layout.addWidget(self.git_commands_text)
         
-        self.project_description_input = QLineEdit()
-        self.project_description_input.setPlaceholderText("Ex: Portfolio pessoal, Blog de tecnologia...")
-        self.project_description_input.setStyleSheet("""
-            background-color: #2d333b; color: #ffffff; padding: 8px;
-            border-radius: 5px; font-size: 14px;
-        """)
-        project_layout.addRow("Descrição:", self.project_description_input)
-        
-        project_group.setLayout(project_layout)
-        layout.addWidget(project_group)
-
-        # Grupo de configurações Git
-        git_group = QGroupBox("🌿 Configurações Git")
-        git_group.setStyleSheet("""
-            QGroupBox {
-                font-weight: bold; color: #8b5cf6; border: 2px solid #8b5cf6;
-                border-radius: 8px; margin-top: 10px; padding-top: 10px;
+        # Botão para processar comandos
+        self.process_commands_button = QPushButton("🔍 Processar e Configurar Tudo")
+        self.process_commands_button.setStyleSheet("""
+            QPushButton {
+                background-color: #8b5cf6; font-weight: bold; height: 50px; border-radius: 8px;
+                min-width: 250px; font-size: 16px;
             }
-            QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px 0 5px; }
+            QPushButton:hover { background-color: #a371f7; }
         """)
-        git_layout = QFormLayout()
+        self.process_commands_button.clicked.connect(self.process_and_configure_all)
+        git_commands_layout.addWidget(self.process_commands_button)
         
-        self.remote_origin_input = QLineEdit()
-        self.remote_origin_input.setPlaceholderText("Ex: origin, upstream, fork...")
-        self.remote_origin_input.setText("origin")
-        self.remote_origin_input.setStyleSheet("""
-            background-color: #2d333b; color: #ffffff; padding: 8px;
-            border-radius: 5px; font-size: 14px;
-        """)
-        git_layout.addRow("Remote Origin:", self.remote_origin_input)
-        
-        self.branch_name_input = QLineEdit()
-        self.branch_name_input.setPlaceholderText("Ex: main, master, develop...")
-        self.branch_name_input.setText("main")
-        self.branch_name_input.setStyleSheet("""
-            background-color: #2d333b; color: #ffffff; padding: 8px;
-            border-radius: 5px; font-size: 14px;
-        """)
-        git_layout.addRow("Branch Principal:", self.branch_name_input)
-        
-        self.repository_url_input = QLineEdit()
-        self.repository_url_input.setPlaceholderText("Ex: git@github.com:usuario/repositorio.git")
-        self.repository_url_input.setStyleSheet("""
-            background-color: #2d333b; color: #ffffff; padding: 8px;
-            border-radius: 5px; font-size: 14px;
-        """)
-        git_layout.addRow("URL do Repositório:", self.repository_url_input)
-        
-        git_group.setLayout(git_layout)
-        layout.addWidget(git_group)
+        git_commands_group.setLayout(git_commands_layout)
+        layout.addWidget(git_commands_group)
 
-        # Grupo de configurações de build
-        build_group = QGroupBox("🔨 Configurações de Build")
-        build_group.setStyleSheet("""
-            QGroupBox {
-                font-weight: bold; color: #8b5cf6; border: 2px solid #8b5cf6;
-                border-radius: 8px; margin-top: 10px; padding-top: 10px;
-            }
-            QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px 0 5px; }
-        """)
-        build_layout = QFormLayout()
+        # Área de status
+        self.config_status_label = QLabel("Aguardando comandos Git...")
+        self.config_status_label.setStyleSheet("color: #fbbf24; font-size: 16px; text-align: center; padding: 20px; background-color: #1e1e2e; border-radius: 8px; margin-top: 20px;")
+        layout.addWidget(self.config_status_label)
         
-        self.build_command_input = QLineEdit()
-        self.build_command_input.setPlaceholderText("Ex: npm run build, yarn build, python setup.py...")
-        self.build_command_input.setText("npm run build")
-        self.build_command_input.setStyleSheet("""
-            background-color: #2d333b; color: #ffffff; padding: 8px;
-            border-radius: 5px; font-size: 14px;
-        """)
-        build_layout.addRow("Comando de Build:", self.build_command_input)
-        
-        self.package_manager_combo = QComboBox()
-        self.package_manager_combo.addItems(["npm", "yarn", "pnpm", "pip", "poetry", "cargo", "maven", "gradle", "outro"])
-        self.package_manager_combo.setStyleSheet("""
-            QComboBox {
-                background-color: #2d333b; color: #ffffff; padding: 8px;
-                border-radius: 5px; font-size: 14px;
-            }
-        """)
-        build_layout.addRow("Gerenciador de Pacotes:", self.package_manager_combo)
-        
-        build_group.setLayout(build_layout)
-        layout.addWidget(build_group)
-
         # Botões de ação
         buttons_layout = QHBoxLayout()
         
@@ -323,6 +265,7 @@ class DeployGUI(QWidget):
             QPushButton:hover { background-color: #10b981; }
         """)
         self.save_config_button.clicked.connect(self.save_configurations)
+        self.save_config_button.setEnabled(False)
         buttons_layout.addWidget(self.save_config_button)
         
         self.load_config_button = QPushButton("📂 Carregar Configurações")
@@ -336,27 +279,197 @@ class DeployGUI(QWidget):
         self.load_config_button.clicked.connect(self.load_configurations)
         buttons_layout.addWidget(self.load_config_button)
         
-        self.init_repo_button = QPushButton("🚀 Inicializar Repositório")
-        self.init_repo_button.setStyleSheet("""
-            QPushButton {
-                background-color: #dc2626; font-weight: bold; height: 45px; border-radius: 8px;
-                min-width: 200px;
-            }
-            QPushButton:hover { background-color: #ef4444; }
-        """)
-        self.init_repo_button.clicked.connect(self.initialize_repository)
-        buttons_layout.addWidget(self.init_repo_button)
-        
         layout.addLayout(buttons_layout)
-        
-        # Área de status
-        self.config_status_label = QLabel("Configurações não salvas")
-        self.config_status_label.setStyleSheet("color: #fbbf24; font-size: 14px; text-align: center; padding: 10px;")
-        layout.addWidget(self.config_status_label)
         
         layout.addStretch()
         tab.setLayout(layout)
         return tab
+
+    def process_and_configure_all(self):
+        """Processa os comandos Git e configura tudo automaticamente"""
+        try:
+            commands_text = self.git_commands_text.toPlainText().strip()
+            if not commands_text:
+                QMessageBox.warning(self, "Aviso", "Por favor, cole os comandos Git na área de texto!")
+                return
+            
+            self.config_status_label.setText("🔄 Processando comandos Git...")
+            self.config_status_label.setStyleSheet("color: #fbbf24; font-size: 16px; text-align: center; padding: 20px; background-color: #1e1e2e; border-radius: 8px; margin-top: 20px;")
+            
+            lines = commands_text.split('\n')
+            project_name = ""
+            repository_url = ""
+            remote_name = "origin"
+            branch_name = "main"
+            
+            # Extrair informações dos comandos
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+                    
+                # Extrair nome do projeto do echo
+                if line.startswith('echo "#') and '>>' in line:
+                    project_name = line.split('"#')[1].split('"')[0].strip()
+                
+                # Extrair remote origin
+                elif 'git remote add' in line:
+                    parts = line.split()
+                    if len(parts) >= 4:
+                        remote_name = parts[3]  # origin
+                        repository_url = parts[4]  # URL
+                
+                # Extrair branch
+                elif 'git branch -M' in line:
+                    branch_name = line.split()[-1]
+            
+            if not project_name or not repository_url:
+                QMessageBox.critical(self, "Erro", "Não foi possível extrair todas as informações necessárias dos comandos Git!")
+                return
+            
+            # Configurar automaticamente
+            self.config_status_label.setText("⚙️ Configurando repositório...")
+            
+            # Verificar se já existe um repositório Git
+            if subprocess.run("git status", shell=True, capture_output=True).returncode == 0:
+                # Repositório já existe, verificar se é o mesmo
+                current_remote = subprocess.getoutput("git remote get-url origin").strip()
+                
+                if current_remote and current_remote != repository_url:
+                    # Repositório diferente, perguntar se quer sobrescrever
+                    reply = QMessageBox.question(
+                        self, 
+                        "Repositório Diferente Detectado", 
+                        f"⚠️ ATENÇÃO: Já existe um repositório Git diferente!\n\n"
+                        f"📁 Repositório atual: {current_remote}\n"
+                        f"📁 Novo repositório: {repository_url}\n\n"
+                        f"Deseja sobrescrever o repositório atual?\n"
+                        f"⚠️ Esta ação irá remover o .git atual e criar um novo!",
+                        QMessageBox.Yes | QMessageBox.No,
+                        QMessageBox.No
+                    )
+                    
+                    if reply == QMessageBox.Yes:
+                        # Remover repositório antigo
+                        subprocess.run("rm -rf .git", shell=True)
+                        self.config_status_label.setText("🆕 Criando novo repositório...")
+                    else:
+                        self.config_status_label.setText("❌ Operação cancelada pelo usuário")
+                        return
+                else:
+                    # Mesmo repositório, configurar
+                    self.config_status_label.setText("🔄 Repositório existente detectado, configurando...")
+                    
+                    # Verificar se tem remote
+                    remote_check = subprocess.run(f"git remote get-url {remote_name}", shell=True, capture_output=True, text=True)
+                    
+                    if remote_check.returncode == 0:
+                        # Remote já existe, alterar para nova URL
+                        subprocess.run(f"git remote set-url {remote_name} {repository_url}", shell=True)
+                    else:
+                        # Remote não existe, adicionar
+                        subprocess.run(f"git remote add {remote_name} {repository_url}", shell=True)
+                    
+                    # Verificar se a branch existe
+                    branch_check = subprocess.run(f"git branch --list {branch_name}", shell=True, capture_output=True, text=True)
+                    if not branch_check.stdout.strip():
+                        # Criar branch se não existir
+                        subprocess.run(f"git checkout -b {branch_name}", shell=True)
+            
+            # Se não tem repositório ou foi removido, criar do zero
+            if subprocess.run("git status", shell=True, capture_output=True).returncode != 0:
+                self.config_status_label.setText("🆕 Criando novo repositório...")
+                
+                # Criar README.md
+                readme_content = f"# {project_name}\n\n## Descrição\n\nProjeto criado automaticamente.\n\n## Como usar\n\n1. Clone o repositório\n2. Instale as dependências\n3. Execute o projeto\n\n## Tecnologias\n\n- Lista de tecnologias utilizadas\n\n## Autor\n\nSeu nome aqui"
+                
+                with open('README.md', 'w', encoding='utf-8') as f:
+                    f.write(readme_content)
+                
+                # Comandos Git para inicialização
+                git_commands = [
+                    'git init',
+                    'git add README.md',
+                    'git commit -m "first commit"',
+                    f'git branch -M {branch_name}',
+                    f'git remote add {remote_name} {repository_url}',
+                    f'git push -u {remote_name} {branch_name}'
+                ]
+                
+                # Executar comandos
+                for cmd in git_commands:
+                    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+                    if result.returncode != 0:
+                        QMessageBox.critical(self, "Erro", f"Erro ao executar: {cmd}\n{result.stderr}")
+                        return
+            
+            # Atualizar threads com novas configurações
+            self.deploy_thread.remote_origin = remote_name
+            self.deploy_thread.branch_name = branch_name
+            
+            # Salvar configurações automaticamente
+            config = {
+                'project_name': project_name,
+                'project_description': f"Projeto {project_name}",
+                'remote_origin': remote_name,
+                'branch_name': branch_name,
+                'repository_url': repository_url,
+                'build_command': 'npm run build',
+                'package_manager': 'npm'
+            }
+            
+            with open('deploy_config.json', 'w', encoding='utf-8') as f:
+                import json
+                json.dump(config, f, indent=2, ensure_ascii=False)
+            
+            # Mostrar sucesso
+            self.config_status_label.setText(f"✅ Projeto '{project_name}' configurado com sucesso!")
+            self.config_status_label.setStyleSheet("color: #10b981; font-size: 16px; text-align: center; padding: 20px; background-color: #1e1e2e; border-radius: 8px; margin-top: 20px;")
+            
+            self.save_config_button.setEnabled(True)
+            
+            QMessageBox.information(self, "🎉 Sucesso!", 
+                f"Projeto configurado automaticamente!\n\n"
+                f"📁 Nome: {project_name}\n"
+                f"🌿 Remote: {remote_name}\n"
+                f"🌿 Branch: {branch_name}\n"
+                f"🔗 URL: {repository_url}\n\n"
+                f"Tudo pronto para usar! 🚀")
+                
+        except Exception as e:
+            self.config_status_label.setText(f"❌ Erro: {e}")
+            self.config_status_label.setStyleSheet("color: #ef4444; font-size: 16px; text-align: center; padding: 20px; background-color: #1e1e2e; border-radius: 8px; margin-top: 20px;")
+            QMessageBox.critical(self, "Erro", f"Erro ao configurar projeto: {e}")
+
+    def save_configurations(self):
+        try:
+            # Carregar configuração atual
+            with open('deploy_config.json', 'r', encoding='utf-8') as f:
+                import json
+                config = json.load(f)
+            
+            self.config_status_label.setText("✅ Configurações já salvas automaticamente!")
+            self.config_status_label.setStyleSheet("color: #10b981; font-size: 16px; text-align: center; padding: 20px; background-color: #1e1e2e; border-radius: 8px; margin-top: 20px;")
+            
+        except Exception as e:
+            self.config_status_label.setText(f"❌ Erro: {e}")
+            self.config_status_label.setStyleSheet("color: #ef4444; font-size: 16px; text-align: center; padding: 20px; background-color: #1e1e2e; border-radius: 8px; margin-top: 20px;")
+
+    def load_configurations(self):
+        try:
+            import json
+            with open('deploy_config.json', 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            
+            self.config_status_label.setText(f"✅ Configurações carregadas: {config.get('project_name', 'Projeto')}")
+            self.config_status_label.setStyleSheet("color: #10b981; font-size: 16px; text-align: center; padding: 20px; background-color: #1e1e2e; border-radius: 8px; margin-top: 20px;")
+            
+        except FileNotFoundError:
+            self.config_status_label.setText("📁 Nenhuma configuração encontrada")
+            self.config_status_label.setStyleSheet("color: #fbbf24; font-size: 16px; text-align: center; padding: 20px; background-color: #1e1e2e; border-radius: 8px; margin-top: 20px;")
+        except Exception as e:
+            self.config_status_label.setText(f"❌ Erro ao carregar: {e}")
+            self.config_status_label.setStyleSheet("color: #ef4444; font-size: 16px; text-align: center; padding: 20px; background-color: #1e1e2e; border-radius: 8px; margin-top: 20px;")
 
     def create_deploy_tab(self):
         tab = QWidget()
@@ -387,6 +500,34 @@ class DeployGUI(QWidget):
         """)
         layout.addWidget(self.commit_input)
 
+        # Botões essenciais
+        buttons_layout = QHBoxLayout()
+        
+        self.view_changes_button = QPushButton("👀 Ver Alterações")
+        self.view_changes_button.setStyleSheet("""
+            QPushButton {
+                background-color: #8b5cf6; font-weight: bold; height: 40px; border-radius: 6px;
+                min-width: 150px;
+            }
+            QPushButton:hover { background-color: #a371f7; }
+        """)
+        self.view_changes_button.clicked.connect(self.view_git_changes)
+        buttons_layout.addWidget(self.view_changes_button)
+        
+        self.view_logs_button = QPushButton("📋 Ver Logs")
+        self.view_logs_button.setStyleSheet("""
+            QPushButton {
+                background-color: #8b5cf6; font-weight: bold; height: 40px; border-radius: 6px;
+                min-width: 150px;
+            }
+            QPushButton:hover { background-color: #a371f7; }
+        """)
+        self.view_logs_button.clicked.connect(self.view_git_logs)
+        buttons_layout.addWidget(self.view_logs_button)
+        
+        buttons_layout.addStretch()
+        layout.addLayout(buttons_layout)
+
         # Área de logs
         self.log_area = QTextEdit()
         self.log_area.setReadOnly(True)
@@ -395,28 +536,6 @@ class DeployGUI(QWidget):
             font-size: 13px; color: #ffffff;
         """)
         layout.addWidget(self.log_area)
-
-        # Botões Git úteis
-        self.buttons_layout = QGridLayout()
-        buttons_info = [
-            ("Git Status", "Mostra alterações não commitadas", "git status --branch --short"),
-            ("Git Remote", "Mostra remotes configurados", "git remote -v"),
-            ("Git Log", "Mostra histórico resumido dos commits", "git log --oneline -5"),
-            ("Git Diff", "Mostra arquivos modificados", "git diff --name-only"),
-        ]
-        for i, (label, tooltip, cmd) in enumerate(buttons_info):
-            btn = QPushButton(label)
-            btn.setToolTip(tooltip)
-            btn.setStyleSheet("""
-                QPushButton {
-                    background-color: #8b5cf6; font-weight: bold; height: 40px; border-radius: 6px;
-                }
-                QPushButton:hover { background-color: #a371f7; }
-                QPushButton:pressed { background-color: #6c3ce8; }
-            """)
-            btn.clicked.connect(lambda checked, c=cmd, t=tooltip: self.run_git_command(c, t))
-            self.buttons_layout.addWidget(btn, i // 2, i % 2)
-        layout.addLayout(self.buttons_layout)
 
         # Barra de progresso
         self.progress_bar = QProgressBar()
@@ -437,7 +556,7 @@ class DeployGUI(QWidget):
         layout.addWidget(self.progress_bar)
 
         # Botão de deploy
-        self.run_button = QPushButton("Iniciar Deploy")
+        self.run_button = QPushButton("🚀 Iniciar Deploy")
         self.run_button.setStyleSheet("""
             QPushButton {
                 background-color: #8b5cf6;
@@ -455,6 +574,187 @@ class DeployGUI(QWidget):
 
         tab.setLayout(layout)
         return tab
+
+    def view_git_changes(self):
+        """Mostra alterações do repositório atual"""
+        try:
+            self.log_area.clear()
+            self.log_area.setTextColor(QColor("#58a6ff"))
+            self.log_area.append("👀 Verificando alterações no repositório atual...\n")
+            
+            # Verificar se estamos em um repositório Git
+            if subprocess.run("git status", shell=True, capture_output=True).returncode != 0:
+                self.log_area.setTextColor(QColor("#ff6b6b"))
+                self.log_area.append("❌ Não é um repositório Git válido!")
+                return
+            
+            # Verificar se as configurações estão carregadas
+            try:
+                with open('deploy_config.json', 'r', encoding='utf-8') as f:
+                    import json
+                    config = json.load(f)
+                    configured_repo = config.get('repository_url', '')
+                    configured_name = config.get('project_name', '')
+                    
+                    # Debug: mostrar o que foi carregado
+                    self.log_area.setTextColor(QColor("#fbbf24"))
+                    self.log_area.append(f"🔍 DEBUG - Configurações carregadas:\n")
+                    self.log_area.append(f"📁 Nome: {configured_name}\n")
+                    self.log_area.append(f"🔗 URL: {configured_repo}\n")
+                    
+            except FileNotFoundError:
+                self.log_area.setTextColor(QColor("#ff6b6b"))
+                self.log_area.append("❌ Arquivo de configuração não encontrado!\n")
+                self.log_area.append("💡 Configure o projeto primeiro na aba Configurações!\n")
+                return
+            except Exception as e:
+                self.log_area.setTextColor(QColor("#ff6b6b"))
+                self.log_area.append(f"❌ Erro ao carregar configurações: {e}\n")
+                return
+            
+            # Verificar se o remote atual corresponde ao configurado
+            current_remote = subprocess.getoutput("git remote get-url origin").strip()
+            
+            # Debug: mostrar remote atual
+            self.log_area.setTextColor(QColor("#fbbf24"))
+            self.log_area.append(f"🔍 DEBUG - Remote atual: {current_remote}\n")
+            
+            if not configured_repo:
+                self.log_area.setTextColor(QColor("#ff6b6b"))
+                self.log_area.append("❌ Nenhum repositório configurado!\n")
+                self.log_area.append("💡 Configure o projeto primeiro na aba Configurações!\n")
+                return
+            
+            if current_remote != configured_repo:
+                self.log_area.setTextColor(QColor("#fbbf24"))
+                self.log_area.append(f"⚠️ ATENÇÃO: Repositório configurado diferente do atual!\n")
+                self.log_area.append(f"📁 Configurado: {configured_name}\n")
+                self.log_area.append(f"🔗 Remote configurado: {configured_repo}\n")
+                self.log_area.append(f"🔗 Remote atual: {current_remote}\n")
+                self.log_area.append(f"💡 Use a aba Configurações para corrigir!\n")
+                return
+            
+            # Mostrar informações do repositório
+            self.log_area.setTextColor(QColor("#8b5cf6"))
+            self.log_area.append(f"✅ Repositório correto detectado!\n")
+            self.log_area.append(f"📁 Nome: {configured_name}\n")
+            self.log_area.append(f"🔗 Remote: {current_remote}\n\n")
+            
+            # Mostrar status do repositório
+            result = subprocess.getoutput("git status --branch --short")
+            if result.strip():
+                self.log_area.setTextColor(QColor("#ffffff"))
+                self.log_area.append("📊 Status do repositório:\n")
+                self.log_area.append(result)
+                
+                # Mostrar arquivos modificados
+                self.log_area.setTextColor(QColor("#58a6ff"))
+                self.log_area.append("\n📁 Arquivos modificados:")
+                for line in result.splitlines():
+                    if line.strip() and not line.startswith('##'):
+                        code = line[:2].strip()
+                        file = line[3:]
+                        if code == "M":
+                            symbol = "🔵"
+                        elif code == "A":
+                            symbol = "🟢"
+                        elif code == "D":
+                            symbol = "🔴"
+                        else:
+                            symbol = "⚪"
+                        self.log_area.append(f"{symbol} {file}")
+            else:
+                self.log_area.setTextColor(QColor("#10b981"))
+                self.log_area.append("✅ Nenhuma alteração detectada!")
+                
+        except Exception as e:
+            self.log_area.setTextColor(QColor("#ff6b6b"))
+            self.log_area.append(f"❌ Erro ao verificar alterações: {e}")
+
+    def view_git_logs(self):
+        """Mostra logs do repositório atual"""
+        try:
+            self.log_area.clear()
+            self.log_area.setTextColor(QColor("#58a6ff"))
+            self.log_area.append("📋 Carregando logs do repositório atual...\n")
+            
+            # Verificar se estamos em um repositório Git
+            if subprocess.run("git status", shell=True, capture_output=True).returncode != 0:
+                self.log_area.setTextColor(QColor("#ff6b6b"))
+                self.log_area.append("❌ Não é um repositório Git válido!")
+                return
+            
+            # Verificar se as configurações estão carregadas
+            try:
+                with open('deploy_config.json', 'r', encoding='utf-8') as f:
+                    import json
+                    config = json.load(f)
+                    configured_repo = config.get('repository_url', '')
+                    configured_name = config.get('project_name', '')
+                    
+                    # Debug: mostrar o que foi carregado
+                    self.log_area.setTextColor(QColor("#fbbf24"))
+                    self.log_area.append(f"🔍 DEBUG - Configurações carregadas:\n")
+                    self.log_area.append(f"📁 Nome: {configured_name}\n")
+                    self.log_area.append(f"🔗 URL: {configured_repo}\n")
+                    
+            except FileNotFoundError:
+                self.log_area.setTextColor(QColor("#ff6b6b"))
+                self.log_area.append("❌ Arquivo de configuração não encontrado!\n")
+                self.log_area.append("💡 Configure o projeto primeiro na aba Configurações!\n")
+                return
+            except Exception as e:
+                self.log_area.setTextColor(QColor("#ff6b6b"))
+                self.log_area.append(f"❌ Erro ao carregar configurações: {e}\n")
+                return
+            
+            # Verificar se o remote atual corresponde ao configurado
+            current_remote = subprocess.getoutput("git remote get-url origin").strip()
+            
+            # Debug: mostrar remote atual
+            self.log_area.setTextColor(QColor("#fbbf24"))
+            self.log_area.append(f"🔍 DEBUG - Remote atual: {current_remote}\n")
+            
+            if not configured_repo:
+                self.log_area.setTextColor(QColor("#ff6b6b"))
+                self.log_area.append("❌ Nenhum repositório configurado!\n")
+                self.log_area.append("💡 Configure o projeto primeiro na aba Configurações!\n")
+                return
+            
+            if current_remote != configured_repo:
+                self.log_area.setTextColor(QColor("#fbbf24"))
+                self.log_area.append(f"⚠️ ATENÇÃO: Repositório configurado diferente do atual!\n")
+                self.log_area.append(f"📁 Configurado: {configured_name}\n")
+                self.log_area.append(f"🔗 Remote configurado: {configured_repo}\n")
+                self.log_area.append(f"🔗 Remote atual: {current_remote}\n")
+                self.log_area.append(f"💡 Use a aba Configurações para corrigir!\n")
+                return
+            
+            # Mostrar informações do repositório
+            self.log_area.setTextColor(QColor("#8b5cf6"))
+            self.log_area.append(f"✅ Repositório correto detectado!\n")
+            self.log_area.append(f" Nome: {configured_name}\n")
+            self.log_area.append(f"🔗 Remote: {current_remote}\n\n")
+            
+            # Mostrar logs recentes📁
+            result = subprocess.getoutput("git log --oneline -10")
+            if result.strip():
+                self.log_area.setTextColor(QColor("#ffffff"))
+                self.log_area.append("📝 Últimos 10 commits:\n")
+                self.log_area.append(result)
+                
+                # Mostrar branch atual
+                branch_result = subprocess.getoutput("git branch --show-current")
+                if branch_result.strip():
+                    self.log_area.setTextColor(QColor("#8b5cf6"))
+                    self.log_area.append(f"\n🌿 Branch atual: {branch_result.strip()}")
+            else:
+                self.log_area.setTextColor(QColor("#fbbf24"))
+                self.log_area.append("⚠️ Nenhum commit encontrado!")
+                
+        except Exception as e:
+            self.log_area.setTextColor(QColor("#ff6b6b"))
+            self.log_area.append(f"❌ Erro ao carregar logs: {e}")
 
     def create_restore_tab(self):
         tab = QWidget()
@@ -550,110 +850,6 @@ class DeployGUI(QWidget):
         
         tab.setLayout(layout)
         return tab
-
-    def save_configurations(self):
-        try:
-            config = {
-                'project_name': self.project_name_input.text(),
-                'project_description': self.project_description_input.text(),
-                'remote_origin': self.remote_origin_input.text(),
-                'branch_name': self.branch_name_input.text(),
-                'repository_url': self.repository_url_input.text(),
-                'build_command': self.build_command_input.text(),
-                'package_manager': self.package_manager_combo.currentText()
-            }
-            
-            # Salvar em arquivo de configuração
-            with open('deploy_config.json', 'w', encoding='utf-8') as f:
-                import json
-                json.dump(config, f, indent=2, ensure_ascii=False)
-            
-            self.config_status_label.setText("✅ Configurações salvas com sucesso!")
-            self.config_status_label.setStyleSheet("color: #10b981; font-size: 14px; text-align: center; padding: 10px;")
-            
-            # Atualizar threads com novas configurações
-            self.deploy_thread.remote_origin = config['remote_origin']
-            self.deploy_thread.branch_name = config['branch_name']
-            
-        except Exception as e:
-            self.config_status_label.setText(f"❌ Erro ao salvar: {e}")
-            self.config_status_label.setStyleSheet("color: #ef4444; font-size: 14px; text-align: center; padding: 10px;")
-
-    def load_configurations(self):
-        try:
-            import json
-            with open('deploy_config.json', 'r', encoding='utf-8') as f:
-                config = json.load(f)
-            
-            self.project_name_input.setText(config.get('project_name', ''))
-            self.project_description_input.setText(config.get('project_description', ''))
-            self.remote_origin_input.setText(config.get('remote_origin', 'origin'))
-            self.branch_name_input.setText(config.get('branch_name', 'main'))
-            self.repository_url_input.setText(config.get('repository_url', ''))
-            self.build_command_input.setText(config.get('build_command', 'npm run build'))
-            
-            package_manager = config.get('package_manager', 'npm')
-            index = self.package_manager_combo.findText(package_manager)
-            if index >= 0:
-                self.package_manager_combo.setCurrentIndex(index)
-            
-            self.config_status_label.setText("✅ Configurações carregadas com sucesso!")
-            self.config_status_label.setStyleSheet("color: #10b981; font-size: 14px; text-align: center; padding: 10px;")
-            
-        except FileNotFoundError:
-            self.config_status_label.setText("📁 Arquivo de configuração não encontrado")
-            self.config_status_label.setStyleSheet("color: #fbbf24; font-size: 14px; text-align: center; padding: 10px;")
-        except Exception as e:
-            self.config_status_label.setText(f"❌ Erro ao carregar: {e}")
-            self.config_status_label.setStyleSheet("color: #ef4444; font-size: 14px; text-align: center; padding: 10px;")
-
-    def initialize_repository(self):
-        try:
-            project_name = self.project_name_input.text().strip()
-            repository_url = self.repository_url_input.text().strip()
-            
-            if not project_name:
-                QMessageBox.warning(self, "Aviso", "Por favor, informe o nome do projeto!")
-                return
-                
-            if not repository_url:
-                QMessageBox.warning(self, "Aviso", "Por favor, informe a URL do repositório!")
-                return
-            
-            # Criar README.md
-            readme_content = f"# {project_name}\n\n"
-            if self.project_description_input.text().strip():
-                readme_content += f"{self.project_description_input.text().strip()}\n\n"
-            readme_content += "## Como usar\n\n1. Clone o repositório\n2. Instale as dependências\n3. Execute o projeto\n\n## Tecnologias\n\n- Lista de tecnologias utilizadas\n\n## Autor\n\nSeu nome aqui"
-            
-            with open('README.md', 'w', encoding='utf-8') as f:
-                f.write(readme_content)
-            
-            # Comandos Git
-            commands = [
-                f'echo "# {project_name}" > README.md',
-                'git init',
-                'git add README.md',
-                'git commit -m "first commit"',
-                f'git branch -M {self.branch_name_input.text()}',
-                f'git remote add {self.remote_origin_input.text()} {repository_url}',
-                f'git push -u {self.remote_origin_input.text()} {self.branch_name_input.text()}'
-            ]
-            
-            # Executar comandos
-            for cmd in commands:
-                if cmd.startswith('echo'):
-                    continue  # Já criamos o README
-                elif cmd.startswith('git'):
-                    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-                    if result.returncode != 0:
-                        QMessageBox.critical(self, "Erro", f"Erro ao executar: {cmd}\n{result.stderr}")
-                        return
-            
-            QMessageBox.information(self, "Sucesso", f"Repositório '{project_name}' inicializado com sucesso!")
-            
-        except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao inicializar repositório: {e}")
 
     def refresh_commits(self):
         try:

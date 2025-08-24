@@ -190,25 +190,6 @@ NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
 - **Heroku**: Deploy tradicional (requer build manual)
 - **DigitalOcean App Platform**: Deploy escalável
 
-## 📝 Contribuição
-
-Contribuições são sempre bem-vindas! 🎉
-
-### 🔄 Como Contribuir
-
-1. **Fork** o projeto
-2. **Clone** seu fork: `git clone https://github.com/seu-usuario/matheusgama-dev-portfolio.git`
-3. **Crie** uma branch: `git checkout -b feature/NovaFuncionalidade`
-4. **Commit** suas mudanças: `git commit -m 'Adiciona nova funcionalidade'`
-5. **Push** para a branch: `git push origin feature/NovaFuncionalidade`
-6. **Abra** um Pull Request
-
-### 📋 Diretrizes de Contribuição
-
-- Mantenha o código limpo e bem documentado
-- Siga os padrões de estilo existentes
-- Teste suas mudanças antes de submeter
-- Adicione testes quando apropriado
 
 ## 📄 Licença
 

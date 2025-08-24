@@ -157,69 +157,6 @@ Crie um arquivo `.env.local` na raiz do projeto:
 NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
 NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
 NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
-
-# Opcional: Analytics
-NEXT_PUBLIC_VERCEL_ANALYTICS_ID=your_analytics_id
-```
-
-## 📧 Configuração do Sistema de Email
-
-### 1. 🔧 EmailJS Setup
-
-1. **Criar Conta**: Acesse [EmailJS](https://www.emailjs.com/)
-2. **Configurar Serviço**: Configure Gmail, Outlook ou outro provedor
-3. **Criar Template**: Template com variáveis personalizáveis
-4. **Obter Credenciais**: Service ID, Template ID e Public Key
-
-### 2. 📋 Configuração do Template
-
-O template deve incluir as seguintes variáveis:
-```html
-<!-- Template de exemplo -->
-Nome: {{user_name}}
-Email: {{user_email}}
-Mensagem: {{user_message}}
-Data: {{date}}
-```
-
-### 3. 🔌 API de Contato
-
-Endpoint `/api/contact` processa as requisições:
-
-```javascript
-// pages/api/contact.js
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
-  try {
-    const { name, email, message } = req.body;
-    
-    // Validação básica
-    if (!name || !email || !message) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
-
-    // Envio via EmailJS
-    const result = await emailjs.send(
-      process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
-      {
-        user_name: name,
-        user_email: email,
-        user_message: message,
-        date: new Date().toLocaleDateString('pt-BR')
-      },
-      process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
-    );
-
-    res.status(200).json({ message: 'Email sent successfully' });
-  } catch (error) {
-    console.error('Email error:', error);
-    res.status(500).json({ message: 'Failed to send email' });
-  }
-}
 ```
 
 ## 🎯 Casos de Uso
@@ -236,46 +173,6 @@ export default async function handler(req, res) {
 - **Contato Direto**: Formulário integrado para comunicação
 - **Experiência Responsiva**: Funciona perfeitamente em todos os dispositivos
 
-## 🔧 Customização
-
-### ➕ Adicionando Novas Seções
-
-```javascript
-// Em components/, crie um novo componente
-const NewSection = () => {
-  return (
-    <section id="new-section" className="py-20 bg-white dark:bg-gray-900">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-8">
-          Nova Seção
-        </h2>
-        {/* Conteúdo da nova seção */}
-      </div>
-    </section>
-  );
-};
-```
-
-### 🎨 Modificando Estilos
-
-```javascript
-// Em tailwind.config.js, adicione cores customizadas
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: '#your-color-here',
-        secondary: '#another-color',
-        // ... outras cores
-      },
-      fontFamily: {
-        custom: ['Your Font', 'sans-serif'],
-      }
-    }
-  }
-}
-```
-
 ## 🚀 Deploy
 
 ### ✅ Vercel (Recomendado)
@@ -284,11 +181,6 @@ module.exports = {
 2. **Configurar Variáveis**: Configure as variáveis de ambiente
 3. **Deploy Automático**: Deploy automático a cada push
 4. **Custom Domain**: Configure domínio personalizado
-
-```bash
-# Deploy via CLI (opcional)
-npm install -g vercel
-vercel
 ```
 
 ### 🌐 Outras Plataformas

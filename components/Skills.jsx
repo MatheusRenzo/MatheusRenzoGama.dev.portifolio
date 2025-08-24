@@ -4,73 +4,61 @@ import { FaPython, FaJs, FaReact, FaNodeJs, FaDatabase, FaGitAlt, FaCode, FaCogs
 const Skills = () => {
   const skillCategories = [
     {
-      title: "Linguagens de Programação",
-      skills: [
-        { name: "Python", level: 90 },
-        { name: "JavaScript", level: 65 },
-        { name: "TypeScript", level: 50 },
-        { name: "PHP", level: 45 },
-        { name: "Java", level: 35 }
-      ]
-    },
-    {
       title: "Backend & APIs",
       skills: [
-        { name: "Python Scripts", level: 95 },
-        { name: "FastAPI", level: 85 },
-        { name: "Django/Flask", level: 80 },
-        { name: "RESTful APIs", level: 90 },
-        { name: "Node.js", level: 60 }
-      ]
+        { name: "Python Scripts", level: 90 },
+        { name: "Node.js", level: 75 },
+        { name: "APIs GraphQL", level: 65 },
+        { name: "APIs REST", level: 80 },
+        ]
     },
     {
-      title: "E-commerce & Integração",
+      title: "E-commerce",
       skills: [
-        { name: "VTEX IO Platform", level: 90 },
-        { name: "API Integration", level: 95 },
-        { name: "Payment Systems", level: 85 },
-        { name: "Inventory Management", level: 85 },
-        { name: "Webhook Integration", level: 80 }
+        { name: "VTEX", level: 85 },
+        { name: "shophify", level: 65 },
+        { name: "integracao ERP", level: 75 },
+        { name: "account Management", level: 80 },
+
       ]
     },
     {
-      title: "Banco de Dados",
+      title: "Frontend & UI",
       skills: [
-        { name: "PostgreSQL", level: 85 },
-        { name: "SQLite", level: 90 },
-        { name: "MySQL", level: 75 },
-        { name: "MongoDB", level: 60 },
-        { name: "Redis", level: 55 }
+        { name: "React.js", level: 65 },
+        { name: "Next.js", level: 60 },
+        { name: "Tailwind CSS", level: 70 },
+        { name: "UI/UX Design", level: 50 }
       ]
     },
     {
-      title: "Frontend (Em Desenvolvimento)",
-      skills: [
-        { name: "React.js", level: 50 },
-        { name: "Next.js", level: 45 },
-        { name: "HTML/CSS", level: 55 },
-        { name: "Tailwind CSS", level: 40 },
-        { name: "UI/UX Design", level: 35 }
-      ]
-    },
-    {
-      title: "DevOps & Ferramentas",
+      title: "DevOps & Infraestrutura",
       skills: [
         { name: "Git & GitHub", level: 80 },
-        { name: "VS Code", level: 90 },
-        { name: "Postman", level: 85 },
-        { name: "Docker", level: 40 },
-        { name: "Linux", level: 50 }
+        { name: "FTP/SFTP", level: 80 },
+        { name: "AWS", level: 40 },
+        { name: "railway", level: 65 },
+        { name: "VPS Management", level: 95 }
       ]
     },
     {
       title: "Automação & Processamento",
       skills: [
-        { name: "Web Scraping", level: 95 },
+        { name: "Web Scraping", level: 75 },
         { name: "Process Automation", level: 90 },
-        { name: "Data Processing", level: 85 },
-        { name: "Task Scheduling", level: 80 },
-        { name: "Bot Development", level: 75 }
+        { name: "Data Processing", level: 70 },
+        { name: "Task Scheduling", level: 77 },
+        { name: "Bot Development", level: 80 }
+      ]
+    },
+    {
+      title: "Banco de Dados & Cloud",
+      skills: [
+        { name: "PostgreSQL", level: 70 },
+        { name: "SQLite", level: 75 },
+        { name: "MySQL", level: 87 },
+        { name: "MongoDB", level: 50 },
+        { name: "Cloud Services", level: 65 }
       ]
     }
   ];
@@ -89,12 +77,9 @@ const Skills = () => {
     },
     {
       category: "Metodologias",
-      skills: [
+        skills: [
         "Agile/Scrum",
         "Kanban",
-        "Code Review",
-        "Documentação de APIs",
-        "Testes de Integração",
         "Debugging Avançado"
       ]
     },
@@ -125,10 +110,6 @@ const Skills = () => {
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold mb-4 text-gray-800">Competências Técnicas</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Especializado em desenvolvimento backend e soluções e-commerce. 
-            Frontend e DevOps são áreas em constante aprendizado.
-          </p>
         </motion.div>
         
         {/* Skills com Barras de Progresso */}
@@ -216,57 +197,24 @@ const Skills = () => {
         >
           <h3 className="text-2xl font-bold text-center mb-8 text-gray-800">Áreas de Especialização</h3>
           <div className="grid md:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-xl shadow-lg text-center border border-gray-200">
-              <div className="text-4xl font-bold text-green-600 mb-2">95%</div>
-              <div className="text-gray-600 font-medium">Backend Development</div>
-              <div className="text-gray-500 text-sm mt-1">Expert Level</div>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-lg text-center border border-gray-200">
-              <div className="text-4xl font-bold text-blue-600 mb-2">90%</div>
-              <div className="text-gray-600 font-medium">E-commerce APIs</div>
-              <div className="text-gray-500 text-sm mt-1">Expert Level</div>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-lg text-center border border-gray-200">
-              <div className="text-4xl font-bold text-purple-600 mb-2">85%</div>
-              <div className="text-gray-600 font-medium">Automação</div>
-              <div className="text-gray-500 text-sm mt-1">Advanced Level</div>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-lg text-center border border-gray-200">
-              <div className="text-4xl font-bold text-orange-600 mb-2">50%</div>
-              <div className="text-gray-600 font-medium">Frontend</div>
-              <div className="text-gray-500 text-sm mt-1">Learning</div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Certificações */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h3 className="text-2xl font-bold text-center mb-8 text-gray-800">Certificações e Treinamentos</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-lg border border-gray-200 text-center hover:shadow-md transition-shadow">
-              <div className="text-blue-600 font-semibold mb-1">VTEX IO</div>
-              <div className="text-gray-600 text-sm">Developer Certification</div>
-              <div className="text-gray-500 text-xs mt-1">2023</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg border border-gray-200 text-center hover:shadow-md transition-shadow">
-              <div className="text-green-600 font-semibold mb-1">Python</div>
-              <div className="text-gray-600 text-sm">Backend Specialist</div>
-              <div className="text-gray-500 text-xs mt-1">2021</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg border border-gray-200 text-center hover:shadow-md transition-shadow">
-              <div className="text-purple-600 font-semibold mb-1">API Development</div>
-              <div className="text-gray-600 text-sm">RESTful Services</div>
-              <div className="text-gray-500 text-xs mt-1">2022</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg border border-gray-200 text-center hover:shadow-md transition-shadow">
-              <div className="text-orange-600 font-semibold mb-1">E-commerce</div>
-              <div className="text-gray-600 text-sm">Integration Specialist</div>
-              <div className="text-gray-500 text-xs mt-1">2023</div>
-            </div>
+            {[
+              { percentage: 85, title: "Python & Automação", level: "Expert Level", color: "green" },
+              { percentage: 85, title: "VTEX & E-commerce", level: "Expert Level", color: "blue" },
+              { percentage: 75, title: "Backend & APIs", level: "Advanced Level", color: "purple" },
+              { percentage: 65, title: "Frontend & React", level: "Intermediate", color: "orange" }
+            ].map((area, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-white p-6 rounded-xl shadow-lg text-center border border-gray-200"
+              >
+                <div className={`text-4xl font-bold text-${area.color}-600 mb-2`}>{area.percentage}%</div>
+                <div className="text-gray-600 font-medium">{area.title}</div>
+                <div className="text-gray-500 text-sm mt-1">{area.level}</div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>

@@ -18,16 +18,6 @@
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/MatheusRenzo/MatheusRenzoGama.dev.portifolio)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio)
 [![GitHub contributors](https://img.shields.io/github/contributors/MatheusRenzo/MatheusRenzoGama.dev.portifolio)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio)
 [![GitHub repo size](https://img.shields.io/github/repo-size/MatheusRenzo/MatheusRenzoGama.dev.portifolio)](https://github.com/MatheusRenzo/MatheusRenzoGama.dev.portifolio)
-
-## 📊 **Gráficos e Estatísticas Visuais**
-
-### 🎯 **GitHub Activity Charts**
-![GitHub Streak](https://streak-stats.demolab.com/?user=MatheusRenzo&theme=dark)
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=MatheusRenzo&show_icons=true&theme=dark)
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=MatheusRenzo&layout=compact&theme=dark)
-
-### 📈 **Repository Statistics**
-![Repository Stats](https://github-readme-stats.vercel.app/api/pin/?username=MatheusRenzo&repo=MatheusRenzoGama.dev.portifolio&theme=dark)
 ![GitHub Profile Views](https://komarev.com/ghpvc/?username=MatheusRenzo&color=blue&style=flat-square)
 
 ### 🚀 **Performance & Analytics**
